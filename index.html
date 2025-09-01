@@ -32,7 +32,6 @@
             height: 100%;
             background-color: var(--secondary-color);
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 9999;
@@ -44,24 +43,29 @@
             pointer-events: none;
         }
         .welcome-message {
-            font-size: 2.5em;
+            text-align: center;
+            opacity: 0; /* Start hidden */
+            animation: fadeIn 1.5s forwards; /* Fade in */
+        }
+        #welcome-icon {
+            font-size: 4.5em; /* Adjusted size for mobile */
+            line-height: 1;
+            display: block; /* Make it a block to control spacing */
+            margin: 0 auto 15px auto; /* Center it and add space below */
+            animation: sparkle 2s infinite ease-in-out;
+        }
+        #welcome-text {
+            font-size: 1.8em; /* Adjusted size for mobile */
             font-weight: 700;
             color: var(--primary-color);
-            opacity: 0;
-            animation: fadeIn 1.5s forwards;
-        }
-        .welcome-message span {
-            font-size: 1.5em;
-            vertical-align: middle;
-            display: inline-block;
-            animation: sparkle 2s infinite ease-in-out;
+            white-space: nowrap; /* Prevent text from wrapping */
         }
         @keyframes fadeIn {
             to { opacity: 1; }
         }
         @keyframes sparkle {
             0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.2); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 1; } /* Made sparkle more subtle */
         }
 
         .app-layout { display: flex; gap: 20px; max-width: 1400px; margin: 0 auto; align-items: flex-start; }
