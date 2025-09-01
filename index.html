@@ -1664,17 +1664,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // START: APP INITIALIZATION LOGIC
     // =======================================================
     function startApp() {
-        // 1. Set the initial date on the pickers FIRST
-        const now = new Date();
-        analyticsPicker.setDate(now, true);
-        
-        // 2. Set all the text content
+        // 1. Set all the text content FIRST to ensure elements are ready
         setLanguage('zh-CN');
 
-        // 3. Now, render all data with components and text ready
+        // 2. Safely initialize date pickers
+        try {
+            const now = new Date();
+            analyticsPicker.setDate(now, true);
+        } catch (error) {
+            console.error("Failed to initialize analytics picker, but continuing:", error);
+        }
+
+        // 3. Now, render all data
         renderAll();
 
-        // 4. Finally, set up any background tasks like notifications
+        // 4. Finally, set up background tasks
         setupNotifications();
     }
 
