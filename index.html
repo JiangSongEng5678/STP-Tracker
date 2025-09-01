@@ -978,6 +978,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function formatDate(dateString) { 
         if (!dateString) return 'N/A'; 
         const date = new Date(dateString);
+
+        if (isNaN(date.getTime())) {
+            console.error("Failed to parse date string:", dateString);
+            // Fallback to a safe, user-friendly value.
+            return "Never";
+        }
         if (currentLang === 'zh-CN') {
             const year = date.getFullYear();
             const month = date.getMonth() + 1;
