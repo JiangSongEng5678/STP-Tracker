@@ -1554,17 +1554,31 @@ document.addEventListener('DOMContentLoaded', () => {
         modalListContainer.innerHTML = contentHTML;
     }
 
-    const now = new Date(); 
-    analyticsPicker.setDate(now, true);
-    setLanguage('zh-CN');
+    function initializeUI() {
+        try {
+            const now = new Date();
+            // This is the line that can fail, so it's inside the 'try' block
+            analyticsPicker.setDate(now, true);
+            setLanguage('zh-CN');
+        } catch (error) {
+            console.error("A UI component failed to initialize, but the app will continue:", error);
+            // Fallback to ensure the language is set even if the picker fails
+            if (!document.documentElement.lang) {
+                setLanguage('zh-CN');
+            }
+        }
+    }
 
+    // This logic now runs first, ensuring the loading screen is always handled
     if (!sessionStorage.getItem('welcomeShown')) {
         setTimeout(() => {
             document.getElementById('loading-screen').classList.add('hidden');
+            initializeUI(); // Initialize the rest of the UI after the screen is gone
         }, 2000);
         sessionStorage.setItem('welcomeShown', 'true');
     } else {
         document.getElementById('loading-screen').style.display = 'none';
+        initializeUI();
     }
 });
 </script>
