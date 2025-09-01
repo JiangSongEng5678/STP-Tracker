@@ -1665,13 +1665,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const now = new Date();
             // This is the line that can fail, so it's inside the 'try' block
             analyticsPicker.setDate(now, true);
-            setLanguage('zh-CN');
+            // The setLanguage call is now removed from here
         } catch (error) {
             console.error("A UI component failed to initialize, but the app will continue:", error);
-            // Fallback to ensure the language is set even if the picker fails
-            if (!document.documentElement.lang) {
-                setLanguage('zh-CN');
-            }
         }
     }
 
@@ -1684,6 +1680,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.setItem('welcomeShown', 'true');
     } else {
         document.getElementById('loading-screen').style.display = 'none';
+        setLanguage('zh-CN');
         initializeUI();
     }
 
