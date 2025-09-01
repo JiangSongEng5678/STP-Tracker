@@ -554,7 +554,7 @@ document.addEventListener('DOMContentLoaded', () => {
             errorDoubleBooking: "此时间段已被预约，请选择其他时间。", errorDownlineNameRequired: "请输入下线名字。",
             confirmJoin: "确定要将对象标记为“已加入”吗？", confirmDisqualify: "确定要将此对象标记为“不合适”吗？", confirmNotJoining: "确定要将此对象标记为“不加入”吗？",
             STP: "已邀约STP", GMS_Appointment: "已邀约GMS", KIT_STP: "跟进中 (STP后)", KIT_GMS: "跟进中 (GMS后)", Joined: "已加入", Disqualified: "不合适", Not_Joining: "不加入",
-            actionScheduleGMS: "安排GMS", actionKeepInTouch: "保持联系", actionDisqualify: "不合适", actionJoined: "已加入", actionNotJoining: "不加入", actionFollowUp: "进行跟进",
+            actionScheduleGMS: "安排GMS", actionKeepInTouch: "保持联系", actionDisqualify: "不合适", actionJoined: "已加入", actionNotJoining: "不加入", actionFollowUp: "进行跟进", actionEditGMS: "修改GMS时间",
             actionModalTitle: "更新对象状态", labelGmsTime: "GMS 邀约时间:", labelActionNotes: "跟进备注 (可选):", confirmActionBtn: "确认", phone: "号码", age: "年龄", occupation: "职业",
             kit_counter: "跟进次数", stp_time: "STP时间", notes: "备注", name: "名字", analytics: { new_stps: "新增STP", new_gms: "新增GMS", new_joins: "成功加入", new_disqualified: "不合适/不加入" },
             guideMainTitle: "安利对象跟进系统 - 用户指南",
@@ -630,7 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
             confirmJoin: "Are you sure you want to mark this prospect as 'Joined'?", confirmDisqualify: "Are you sure you want to mark this prospect as 'Disqualified'?", confirmNotJoining: "Are you sure you want to mark this prospect as 'Not Joining'?",
             STP: "STP Scheduled", GMS_Appointment: "GMS Scheduled", KIT_STP: "Keep In Touch (Post-STP)", KIT_GMS: "Keep In Touch (Post-GMS)", Joined: "Joined",
             Disqualified: "Disqualified", Not_Joining: "Not Joining", actionScheduleGMS: "Schedule GMS", actionKeepInTouch: "Keep In Touch", actionDisqualify: "Disqualify",
-            actionJoined: "Mark as Joined", actionNotJoining: "Mark as Not Joining", actionFollowUp: "Follow Up", actionModalTitle: "Update Prospect Status",
+            actionJoined: "Mark as Joined", actionNotJoining: "Mark as Not Joining", actionFollowUp: "Follow Up", actionEditGMS: "Edit GMS Time", actionModalTitle: "Update Prospect Status",
             labelGmsTime: "GMS Appointment Time:", labelActionNotes: "Follow-up Notes (Optional):", confirmActionBtn: "Confirm", phone: "Phone", age: "Age",
             occupation: "Occupation", kit_counter: "KIT Count", stp_time: "STP Time", notes: "Notes", name: "Name",
             analytics: { new_stps: "New STPs", new_gms: "New GMS", new_joins: "New Joins", new_disqualified: "Disqualified / Not Joining" },
@@ -915,6 +915,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 p.status = 'GMS_Appointment'; p.gmsTime = gmsTime; p.kitCounter = 0; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); 
                 updateAvailability(p.gmsTime);
                 break;
+            case 'edit_gms':
+                const originalGmsTime = p.gmsTime;
+                // Check for double booking, excluding the current prospect's original time slot
+                if (isTimeSlotBooked(gmsTime, p.id)) {
+                    alert(translations[currentLang].errorDoubleBooking);
+                    return; // Stop the function if the new time is booked
+                }
+                addBackAvailability(originalGmsTime); // Free up the old time slot
+                p.gmsTime = gmsTime; // Assign the new time
+                updateAvailability(p.gmsTime); // Book the new time slot
+                p.statusHistory.push({ status: 'GMS_Rescheduled', date: new Date().toISOString() }); // Add a history entry
+                break;
             case 'kit_stp': p.status = 'KIT_STP'; p.kitCounter = 1; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); p.tags.push('FollowUp-1'); break;
             case 'kit_gms': p.status = 'KIT_GMS'; p.kitCounter = 1; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); p.tags.push('FollowUp-1'); break;
             case 'disqualify': p.status = 'Disqualified'; break; case 'not_joining': p.status = 'Not_Joining'; break;
@@ -927,7 +939,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function openActionModal(id, action) {
-        document.getElementById('action-form').reset(); gmsPicker.clear(); document.getElementById('action-prospect-id').value = id; document.getElementById('action-type').value = action; const gmsGroup = document.getElementById('gms-schedule-group'); gmsGroup.style.display = action === 'schedule_gms' ? 'block' : 'none'; document.getElementById('gms-datetime').required = action === 'schedule_gms'; actionModal.style.display = 'flex';
+        document.getElementById('action-form').reset(); gmsPicker.clear(); document.getElementById('action-prospect-id').value = id; document.getElementById('action-type').value = action; const gmsGroup = document.getElementById('gms-schedule-group'); gmsGroup.style.display = action === 'schedule_gms' || 'edit_gms' ? 'block' : 'none'; document.getElementById('gms-datetime').required = action === 'schedule_gms' || action === 'edit_gms'; actionModal.style.display = 'flex';
     }
     function openEditModal(prospectId) {
         const index = prospects.findIndex(p => p.id === prospectId); if (index === -1) return;
@@ -1183,7 +1195,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const actionsDiv = card.querySelector('.prospect-actions');
             if (p.status === 'STP') { actionsDiv.innerHTML += `<button class="btn-primary" data-action="schedule_gms" data-id="${p.id}">${translations[currentLang].actionScheduleGMS}</button><button class="btn-secondary" data-action="kit_stp" data-id="${p.id}">${translations[currentLang].actionKeepInTouch}</button><button class="btn-danger" data-action="disqualify" data-id="${p.id}">${translations[currentLang].actionDisqualify}</button>`;
             } else if (p.status === 'KIT_STP') { actionsDiv.innerHTML += `<button class="btn-primary" data-action="schedule_gms" data-id="${p.id}">${translations[currentLang].actionScheduleGMS}</button><button class="btn-warning" data-action="follow_up" data-id="${p.id}">${translations[currentLang].actionFollowUp} (${p.kitCounter})</button><button class="btn-danger" data-action="disqualify" data-id="${p.id}">${translations[currentLang].actionDisqualify}</button>`;
-            } else if (p.status === 'GMS_Appointment') { actionsDiv.innerHTML += `<button class="btn-success" data-action="joined" data-id="${p.id}">${translations[currentLang].actionJoined}</button><button class="btn-secondary" data-action="kit_gms" data-id="${p.id}">${translations[currentLang].actionKeepInTouch}</button><button class="btn-danger" data-action="not_joining" data-id="${p.id}">${translations[currentLang].actionNotJoining}</button>`;
+            } else if (p.status === 'GMS_Appointment') { actionsDiv.innerHTML += `<button class="btn-success" data-action="joined" data-id="${p.id}">${translations[currentLang].actionJoined}</button><button class="btn-primary" data-action="edit_gms" data-id="${p.id}">${translations[currentLang].actionEditGMS}</button><button class="btn-secondary" data-action="kit_gms" data-id="${p.id}">${translations[currentLang].actionKeepInTouch}</button><button class="btn-danger" data-action="not_joining" data-id="${p.id}">${translations[currentLang].actionNotJoining}</button>`;
             } else if (p.status === 'KIT_GMS') { actionsDiv.innerHTML += `<button class="btn-success" data-action="joined" data-id="${p.id}">${translations[currentLang].actionJoined}</button><button class="btn-warning" data-action="follow_up" data-id="${p.id}">${translations[currentLang].actionFollowUp} (${p.kitCounter})</button><button class="btn-danger" data-action="not_joining" data-id="${p.id}">${translations[currentLang].actionNotJoining}</button>`; }
             listDiv.appendChild(card);
         });
