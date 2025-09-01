@@ -1602,6 +1602,64 @@ document.addEventListener('DOMContentLoaded', () => {
         modalListContainer.innerHTML = contentHTML;
     }
 
+    function setupNotifications() {
+        // 1. Check if the browser supports notifications
+        if (!("Notification" in window)) {
+            console.log("This browser does not support desktop notification");
+            return;
+        }
+
+        // 2. Request permission from the user
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                console.log("Notification permission granted.");
+                // 3. If granted, start checking for appointments every minute
+                setInterval(checkForUpcomingAppointments, 60000); // 60000ms = 1 minute
+            }
+        });
+    }
+
+    function checkForUpcomingAppointments() {
+        const now = new Date();
+        const fifteenMinutesFromNow = new Date(now.getTime() + 15 * 60000);
+        const t = translations[currentLang];
+
+        prospects.forEach(p => {
+            let appointmentTime = null;
+            let appointmentType = '';
+
+            if (p.status === 'STP' && p.stpTime) {
+                appointmentTime = new Date(p.stpTime);
+                appointmentType = 'STP';
+            } else if (p.status === 'GMS_Appointment' && p.gmsTime) {
+                appointmentTime = new Date(p.gmsTime);
+                appointmentType = 'GMS';
+            }
+
+            // Check if there is an appointment within the next 15 minutes but not in the past
+            if (appointmentTime && appointmentTime > now && appointmentTime <= fifteenMinutesFromNow) {
+                
+                // IMPORTANT: Prevent sending the same notification over and over
+                const notificationKey = `notif_sent_${p.id}`;
+                if (sessionStorage.getItem(notificationKey) === 'true') {
+                    return; // Skip if we've already notified for this appointment
+                }
+
+                // Create the notification
+                const title = t.upcomingAppointmentsTitle;
+                const options = {
+                    body: `${p.name} - ${appointmentType} @ ${appointmentTime.toLocaleTimeString(currentLang === 'zh-CN' ? 'zh-CN' : 'en-US', { hour: '2-digit', minute: '2-digit' })}`,
+                    icon: 'https://img.icons8.com/color/48/000000/amethyst.png' // A simple diamond icon
+                };
+
+                new Notification(title, options);
+
+                // Mark this notification as sent in session storage
+                sessionStorage.setItem(notificationKey, 'true');
+            }
+        });
+    }
+
     function initializeUI() {
         try {
             const now = new Date();
@@ -1628,6 +1686,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('loading-screen').style.display = 'none';
         initializeUI();
     }
+
+    // ADD THIS LINE AT THE VERY END
+    setupNotifications();
 });
 </script>
 </body>
