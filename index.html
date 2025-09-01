@@ -776,7 +776,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('tags').placeholder = t.tagsPlaceholder;
         const sortSelect = document.getElementById('sort-by');
         sortSelect.innerHTML = `<option value="newest">${t.sort.newest}</option><option value="name_az">${t.sort.name_az}</option><option value="name_za">${t.sort.name_za}</option><option value="status">${t.sort.status}</option>`;
-        renderAll();
+        
     }
     
     function saveAllData() {
@@ -1660,35 +1660,39 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function initializeUI() {
-        try {
-            const now = new Date();
-            // This is the line that can fail, so it's inside the 'try' block
-            analyticsPicker.setDate(now, true);
-            setLanguage('zh-CN');
-        } catch (error) {
-            console.error("A UI component failed to initialize, but the app will continue:", error);
-            // Fallback to ensure the language is set even if the picker fails
-            if (!document.documentElement.lang) {
-                setLanguage('zh-CN');
-            }
-        }
+    // =======================================================
+    // START: APP INITIALIZATION LOGIC
+    // =======================================================
+    function startApp() {
+        // 1. Set the initial date on the pickers FIRST
+        const now = new Date();
+        analyticsPicker.setDate(now, true);
+        
+        // 2. Set all the text content
+        setLanguage('zh-CN');
+
+        // 3. Now, render all data with components and text ready
+        renderAll();
+
+        // 4. Finally, set up any background tasks like notifications
+        setupNotifications();
     }
 
-    // This logic now runs first, ensuring the loading screen is always handled
+    // This logic handles the loading screen and then starts the app
     if (!sessionStorage.getItem('welcomeShown')) {
         setTimeout(() => {
             document.getElementById('loading-screen').classList.add('hidden');
-            initializeUI(); // Initialize the rest of the UI after the screen is gone
+            startApp(); // Run the startup sequence
         }, 2000);
         sessionStorage.setItem('welcomeShown', 'true');
     } else {
         document.getElementById('loading-screen').style.display = 'none';
-        initializeUI();
+        startApp(); // Run the startup sequence
     }
 
-    // ADD THIS LINE AT THE VERY END
-    setupNotifications();
+    // =======================================================
+    // END: APP INITIALIZATION LOGIC
+    // =======================================================
 });
 </script>
 </body>
