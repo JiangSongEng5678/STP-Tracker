@@ -221,6 +221,21 @@
             .tab-button { flex-grow: 0; flex-shrink: 0; }
             .prospect-meta { flex-direction: column; gap: 5px; align-items: flex-start; }
             .prospect-meta .separator { display: none; }
+
+            /* ADD THIS NEW BLOCK FOR THE FIX */
+            .dashboard-header {
+                flex-direction: column;      /* Stack title and buttons vertically */
+                align-items: flex-start;   /* Align them to the left */
+                gap: 15px;                   /* Add space between the title and buttons */
+                margin-bottom: 20px;         /* Add space below the header to prevent overlap */
+            }
+
+            /* ADD THIS FOR A MORE PROFESSIONAL BUTTON LAYOUT */
+            .dashboard-header .controls {
+                display: grid;               /* Use grid for easy columns */
+                grid-template-columns: 1fr 1fr; /* Create a two-column layout for the buttons */
+                width: 100%;                 /* Make the container take full width */
+            }
         }
     </style>
 </head>
