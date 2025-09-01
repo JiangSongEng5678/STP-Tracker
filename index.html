@@ -213,6 +213,42 @@
         .flatpickr-monthSelect-month:hover { background-color: var(--secondary-color); color: var(--primary-color); }
         .flatpickr-monthSelect-month.selected { background-color: var(--primary-color); color: var(--light-text-color); }
 
+        /* ======================================================= */
+        /* START: HOVER EFFECT ENHANCEMENTS                      */
+        /* ======================================================= */
+
+        /* 1. Add a subtle 'lift' effect to Dashboard cards */
+        .reminder-card, .appointment-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .reminder-card:hover, .appointment-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(30, 41, 59, 0.1);
+        }
+
+        /* 2. Enhance the main navigation tabs on hover */
+        .tab-button:hover {
+            transform: translateY(-2px);
+            background-color: rgba(0,0,0,0.02);
+        }
+
+        /* 3. Make calendar days pop out when hovered */
+        .calendar-day {
+            /* Add transform and box-shadow to the existing transition */
+            transition: background-color 0.2s, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .calendar-day:not(.other-month):hover {
+            transform: translateY(-3px);
+            box-shadow: var(--box-shadow);
+            cursor: pointer;
+        }
+
+        /* ======================================================= */
+        /* END: HOVER EFFECT ENHANCEMENTS                        */
+        /* ======================================================= */
+
         /* Tablet Responsive Styles */
         @media (max-width: 992px) { 
             body { padding: 15px; }
