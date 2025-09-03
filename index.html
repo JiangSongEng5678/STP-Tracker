@@ -2042,8 +2042,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // **UPDATED** Main Application Logic
     async function startApp(user) {
+        const startTime = Date.now();
         authContainer.style.display = 'none';
         appLayout.style.display = 'flex';
         const logoutButton = document.querySelector('#logout-btn');
@@ -2054,7 +2054,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('user-email-settings').textContent = user.email;
             document.getElementById('user-info-sidebar').style.display = 'block';
         }
-        
+
         // Fetch prospects
         const { data: prospectsData, error: prospectsError } = await supabaseClient.from('prospects').select('*');
         if (prospectsError) {
@@ -2083,21 +2083,34 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Failed to initialize analytics picker:", error);
         }
         renderAll();
-        subscribeUserToPush(); 
+        subscribeUserToPush();
+
+        // UI/UX Improvement: Ensure loading screen stays for at least 2 seconds
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = 2000 - elapsedTime;
+
+        setTimeout(() => {
+            document.getElementById('loading-screen').classList.add('hidden');
+        }, remainingTime > 0 ? remainingTime : 0);
     }
     
     async function checkUserSession() {
         setLanguage('zh-CN');
         const { data: { session } } = await supabaseClient.auth.getSession();
-        
-        document.getElementById('loading-screen').style.display = 'none';
 
         if (session) {
+            // If the user is logged in, start the app.
+            // The startApp function already contains the logic for the 2-second minimum display.
             startApp(session.user);
         } else {
-            appLayout.style.display = 'none';
-            authContainer.style.display = 'flex';
-            showLoginView();
+            // If the user is NOT logged in, wait for 2 seconds before hiding the loading screen
+            // and showing the login form. This is the corrected logic.
+            setTimeout(() => {
+                document.getElementById('loading-screen').classList.add('hidden');
+                appLayout.style.display = 'none';
+                authContainer.style.display = 'flex';
+                showLoginView();
+            }, 2000);
         }
     }
 
