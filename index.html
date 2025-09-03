@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/style.css">
 
+    <link rel="manifest" href="manifest.json">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -419,12 +421,8 @@
     </style>
 </head>
 <body>
-    <!-- ======================================================= -->
-    <!-- START: AUTHENTICATION UI                                -->
-    <!-- ======================================================= -->
     <div id="auth-container" style="display: none;">
         <div class="auth-card">
-            <!-- Login Form -->
             <div id="login-view">
                 <h2 id="auth-title-login"></h2>
                 <div class="form-group">
@@ -440,7 +438,6 @@
                 <a href="#" id="forgot-password-link" class="forgot-password"></a>
             </div>
 
-            <!-- Signup Form -->
             <div id="signup-view" style="display: none;">
                 <h2 id="auth-title-signup"></h2>
                 <div class="form-group">
@@ -456,10 +453,6 @@
             </div>
         </div>
     </div>
-    <!-- ======================================================= -->
-    <!-- END: AUTHENTICATION UI                                  -->
-    <!-- ======================================================= -->
-
     <div id="loading-screen">
         <div class="welcome-message">
             <span id="welcome-icon">💎</span> <span id="welcome-text">欢迎钻石们!</span>
@@ -1678,7 +1671,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    document.getElementById('clearData').addEventListener('click', () => { if (confirm(translations[currentLang].confirmClearData)) { prospects = []; availability = {}; lastSyncTimestamp = null; localStorage.clear(); alert(translations[currentLang].dataCleared); renderAll(); } });
+    document.getElementById('clearData').addEventListener('click', async () => {
+        if (confirm(translations[currentLang].confirmClearData)) {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (user) {
+                // First, delete all related subscriptions to avoid foreign key constraints
+                await supabaseClient.from('subscriptions').delete().eq('user_id', user.id);
+                
+                // Then, delete all prospects
+                await supabaseClient.from('prospects').delete().eq('user_id', user.id);
+
+                // **NEW**: Delete all availability data
+                await supabaseClient.from('availability').delete().eq('user_id', user.id);
+                
+                prospects = [];
+                availability = {};
+                lastSyncTimestamp = null;
+                alert(translations[currentLang].dataCleared);
+                renderAll();
+            }
+        }
+    });
     
     document.getElementById('exportData').addEventListener('click', () => {
         if (prospects.length === 0 && Object.keys(availability).length === 0) return alert('No data to export.');
@@ -1704,15 +1717,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const file = event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
             try {
                 const data = JSON.parse(e.target.result);
-                if (data && data.prospects && data.availability) {
+                if (data && data.prospects) {
                     if (confirm(translations[currentLang].importConfirm)) {
-                        prospects = data.prospects;
-                        availability = data.availability;
+                        const { data: { user } } = await supabaseClient.auth.getUser();
+                        if (!user) return alert("You must be logged in to import data.");
+
+                        // Add user_id to each prospect before upserting
+                        const prospectsToImport = data.prospects.map(p => ({ ...p, user_id: user.id }));
+
+                        await supabaseClient.from('prospects').upsert(prospectsToImport, { onConflict: 'id' });
+                        
+                        // **NEW**: Import availability data
+                        if (data.availability) {
+                            const availabilityToImport = Object.entries(data.availability).map(([date, time_slots]) => ({
+                                user_id: user.id,
+                                date: date,
+                                time_slots: time_slots
+                            }));
+                            await supabaseClient.from('availability').upsert(availabilityToImport, { onConflict: 'user_id, date' });
+                        }
+
                         lastSyncTimestamp = data.timestamp;
-                        saveAllData();
+                        await startApp(user); // Reload data from Supabase
                         alert(translations[currentLang].importSuccess);
                     }
                 } else {
@@ -1720,6 +1749,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (error) {
                 alert(translations[currentLang].importError);
+                console.error("Import error:", error);
             }
         };
         reader.readAsText(file);
@@ -1806,16 +1836,37 @@ document.addEventListener('DOMContentLoaded', () => {
         plannerModal.style.display = 'flex';
     }
 
-    document.getElementById('save-availability-btn').addEventListener('click', () => {
+    // **UPDATED** Save Availability Button Listener
+    document.getElementById('save-availability-btn').addEventListener('click', async () => {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) return alert("You must be logged in to save availability.");
+
         const dateKey = `${currentPlannerDate.getFullYear()}-${String(currentPlannerDate.getMonth() + 1).padStart(2, '0')}-${String(currentPlannerDate.getDate()).padStart(2, '0')}`;
         const availableSlots = Array.from(document.querySelectorAll('#planner-timeline-slots .time-slot.available')).map(slot => slot.dataset.time);
+
+        // Update local availability object
         if (availableSlots.length > 0) {
             availability[dateKey] = availableSlots;
         } else {
             delete availability[dateKey];
         }
-        saveAllData();
-        plannerModal.style.display = 'none';
+
+        // Upsert data to Supabase
+        const { error } = await supabaseClient
+            .from('availability')
+            .upsert({ 
+                user_id: user.id,
+                date: dateKey,
+                time_slots: availableSlots
+            }, { onConflict: 'user_id, date' });
+
+        if (error) {
+            console.error("Error saving availability:", error);
+            alert("Failed to save availability.");
+        } else {
+            renderAvailableSlotsSidebar();
+            plannerModal.style.display = 'none';
+        }
     });
     
     function getSlotFromTime(date) {
@@ -1898,75 +1949,16 @@ document.addEventListener('DOMContentLoaded', () => {
         modalListContainer.innerHTML = contentHTML;
     }
 
-    function setupNotifications() {
-        // 1. Check if the browser supports notifications
-        if (!("Notification" in window)) {
-            console.log("This browser does not support desktop notification");
-            return;
-        }
-
-        // 2. Request permission from the user
-        Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-                console.log("Notification permission granted.");
-                // 3. If granted, start checking for appointments every minute
-                setInterval(checkForUpcomingAppointments, 60000); // 60000ms = 1 minute
-            }
-        });
-    }
-
-    function checkForUpcomingAppointments() {
-        const now = new Date();
-        const fifteenMinutesFromNow = new Date(now.getTime() + 15 * 60000);
-        const t = translations[currentLang];
-
-        prospects.forEach(p => {
-            let appointmentTime = null;
-            let appointmentType = '';
-
-            if (p.status === 'STP' && p.stpTime) {
-                appointmentTime = new Date(p.stpTime);
-                appointmentType = 'STP';
-            } else if (p.status === 'GMS_Appointment' && p.gmsTime) {
-                appointmentTime = new Date(p.gmsTime);
-                appointmentType = 'GMS';
-            }
-
-            // Check if there is an appointment within the next 15 minutes but not in the past
-            if (appointmentTime && appointmentTime > now && appointmentTime <= fifteenMinutesFromNow) {
-                
-                // IMPORTANT: Prevent sending the same notification over and over
-                const notificationKey = `notif_sent_${p.id}`;
-                if (sessionStorage.getItem(notificationKey) === 'true') {
-                    return; // Skip if we've already notified for this appointment
-                }
-
-                // Create the notification
-                const title = t.upcomingAppointmentsTitle;
-                const options = {
-                    body: `${p.name} - ${appointmentType} @ ${appointmentTime.toLocaleTimeString(currentLang === 'zh-CN' ? 'zh-CN' : 'en-US', { hour: '2-digit', minute: '2-digit' })}`,
-                    icon: 'https://img.icons8.com/color/48/000000/amethyst.png' // A simple diamond icon
-                };
-
-                new Notification(title, options);
-
-                // Mark this notification as sent in session storage
-                sessionStorage.setItem(notificationKey, 'true');
-            }
-        });
-    }
-
     // =======================================================
-    // START: NEW AUTH & APP INITIALIZATION LOGIC
+    // START: AUTH & APP INITIALIZATION LOGIC
     // =======================================================
 
     const authContainer = document.getElementById('auth-container');
     const appLayout = document.querySelector('.app-layout');
-    const logoutBtn = document.getElementById('logout-btn'); // We will add this button to the HTML header
+    const logoutBtn = document.getElementById('logout-btn');
     const loginView = document.getElementById('login-view');
     const signupView = document.getElementById('signup-view');
 
-    // --- Authentication Functions ---
     async function handleLogin() {
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
@@ -2001,7 +1993,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!email) return;
 
         const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-            redirectTo: window.location.href, // Redirects back to the same page
+            redirectTo: window.location.href,
         });
 
         if (error) {
@@ -2011,7 +2003,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- UI Toggling ---
     function showLoginView() {
         loginView.style.display = 'block';
         signupView.style.display = 'none';
@@ -2022,12 +2013,39 @@ document.addEventListener('DOMContentLoaded', () => {
         signupView.style.display = 'block';
     }
 
-    // --- Main Application Logic ---
+    async function subscribeUserToPush() {
+        try {
+            const response = await fetch('/.netlify/functions/get-vapid-key');
+            if (!response.ok) {
+                throw new Error('Failed to get VAPID key.');
+            }
+            const { publicKey } = await response.json();
+
+            await Notification.requestPermission();
+            const registration = await navigator.serviceWorker.ready;
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: publicKey
+            });
+            
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (user) {
+                await supabaseClient.from('subscriptions').upsert({
+                    user_id: user.id,
+                    subscription_data: subscription
+                }, { onConflict: 'user_id' });
+
+                console.log('User successfully subscribed to push notifications.');
+            }
+        } catch (error) {
+            console.error('Failed to subscribe user:', error);
+        }
+    }
+
     async function startApp(user) {
+        const startTime = Date.now();
         authContainer.style.display = 'none';
         appLayout.style.display = 'flex';
-        // You'll need to add a logout button to your header controls for this to work
-        // e.g., <button id="logout-btn" class="btn-danger">Logout</button>
         const logoutButton = document.querySelector('#logout-btn');
         if(logoutButton) logoutButton.style.display = 'block';
 
@@ -2036,12 +2054,26 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('user-email-settings').textContent = user.email;
             document.getElementById('user-info-sidebar').style.display = 'block';
         }
-        
-        const { data, error } = await supabaseClient.from('prospects').select('*');
-        if (error) {
-            console.error("Error loading data:", error);
+
+        // Fetch prospects
+        const { data: prospectsData, error: prospectsError } = await supabaseClient.from('prospects').select('*');
+        if (prospectsError) {
+            console.error("Error loading prospects:", prospectsError);
         } else {
-            prospects = data || [];
+            prospects = prospectsData || [];
+        }
+
+        // **NEW**: Fetch availability
+        const { data: availabilityData, error: availabilityError } = await supabaseClient.from('availability').select('date, time_slots');
+        if (availabilityError) {
+            console.error("Error loading availability:", availabilityError);
+        } else {
+            availability = {}; // Reset local availability
+            if (availabilityData) {
+                availabilityData.forEach(row => {
+                    availability[row.date] = row.time_slots;
+                });
+            }
         }
 
         try {
@@ -2051,20 +2083,34 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Failed to initialize analytics picker:", error);
         }
         renderAll();
-        setupNotifications();
+        subscribeUserToPush();
+
+        // UI/UX Improvement: Ensure loading screen stays for at least 2 seconds
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = 2000 - elapsedTime;
+
+        setTimeout(() => {
+            document.getElementById('loading-screen').classList.add('hidden');
+        }, remainingTime > 0 ? remainingTime : 0);
     }
     
     async function checkUserSession() {
         setLanguage('zh-CN');
         const { data: { session } } = await supabaseClient.auth.getSession();
-        
-        document.getElementById('loading-screen').style.display = 'none';
 
         if (session) {
+            // If the user is logged in, start the app.
+            // The startApp function already contains the logic for the 2-second minimum display.
             startApp(session.user);
         } else {
-            appLayout.style.display = 'none';
-            authContainer.style.display = 'flex';
+            // If the user is NOT logged in, wait for 2 seconds before hiding the loading screen
+            // and showing the login form. This is the corrected logic.
+            setTimeout(() => {
+                document.getElementById('loading-screen').classList.add('hidden');
+                appLayout.style.display = 'none';
+                authContainer.style.display = 'flex';
+                showLoginView();
+            }, 2000);
         }
     }
 
@@ -2074,13 +2120,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('show-signup-link').addEventListener('click', (e) => { e.preventDefault(); showSignupView(); });
     document.getElementById('show-login-link').addEventListener('click', (e) => { e.preventDefault(); showLoginView(); });
     document.getElementById('forgot-password-link').addEventListener('click', (e) => { e.preventDefault(); handlePasswordReset(); });
-    // Add logout button event listener if it exists in your header
     const logoutButton = document.querySelector('#logout-btn');
     if (logoutButton) {
         logoutButton.addEventListener('click', handleLogout);
     }
     
-    // Check for password recovery flow on page load
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
         if (event === 'PASSWORD_RECOVERY') {
             const newPassword = prompt("Please enter your new password:");
@@ -2095,9 +2139,20 @@ document.addEventListener('DOMContentLoaded', () => {
     checkUserSession(); // This is the new starting point for your app
 
     // =======================================================
-    // END: NEW AUTH & APP INITIALIZATION LOGIC
+    // END: AUTH & APP INITIALIZATION LOGIC
     // =======================================================
 });
 </script>
+
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(reg => console.log('Service worker registered.', reg))
+                .catch(err => console.log('Service worker registration failed:', err));
+        });
+    }
+</script>
+
 </body>
 </html>
