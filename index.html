@@ -6,6 +6,7 @@
     <title>安利对象跟进系统 (Amway Prospect Tracker)</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <style>
         :root {
             --primary-color: #0d47a1; 
@@ -320,7 +321,19 @@
         </div>
     </div>
 
-    <div class="app-layout">
+    <div id="auth-container">
+        <div class="container" style="max-width: 400px; margin: 50px auto;">
+            <h2 id="auth-title">Login / Sign Up</h2>
+            <div class="form-group"><label for="email">Email</label><input type="email" id="auth-email"></div>
+            <div class="form-group"><label for="password">Password</label><input type="password" id="auth-password"></div>
+            <div class="controls" style="gap: 15px;">
+                <button class="btn-primary" id="login-btn">Login</button>
+                <button class="btn-success" id="signup-btn">Sign Up</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-layout" id="main-app" style="display: none;">
         <div class="main-content">
             <div class="container">
                 <header>
@@ -492,6 +505,9 @@
             <div id="available-slots-list"></div>
         </div>
     </div>
+    
+    <button id="logout-btn" class="btn-danger" style="position: fixed; top: 20px; right: 20px; display: none;">Logout</button>
+
 
     <div id="prospect-modal" class="modal">
         <div class="modal-content">
@@ -572,6 +588,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // --- START: NEW SUPABASE SETUP ---
+    const SUPABASE_URL = 'https://puaofmijvkmamyfugdzi.supabase.co'; // Replace with your Supabase URL
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1YW9mbWlqdmttYW15ZnVnZHppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwNTkzOTUsImV4cCI6MjA3MjYzNTM5NX0.fVuYgjxpf2pRLYpkCBIfsC5PjBQKKRYtN5hnL9jrZ8A'; // Replace with your Supabase Anon Key
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // --- END: NEW SUPABASE SETUP ---
+    
     let currentPage = 1;
     const PROSPECTS_PER_PAGE = 8;
     let trendChartInstance = null;
@@ -729,11 +752,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     let currentLang = 'zh-CN';
     let calendarDate = new Date();
-    let prospects = JSON.parse(localStorage.getItem('prospects')) || [];
-    let availability = JSON.parse(localStorage.getItem('availability')) || {};
+    let prospects = [];
+    let availability = {};
     let prospectViewFilter = 'user'; 
     let analyticsView = 'user'; 
-    let lastSyncTimestamp = localStorage.getItem('lastSyncTimestamp');
+    let lastSyncTimestamp = null;
 
     function setLanguage(lang) {
         currentLang = lang; document.documentElement.lang = lang; const t = translations[lang];
@@ -826,14 +849,25 @@ document.addEventListener('DOMContentLoaded', () => {
         
     }
     
-    function saveAllData() {
-        localStorage.setItem('prospects', JSON.stringify(prospects));
-        localStorage.setItem('availability', JSON.stringify(availability));
-        localStorage.setItem('lastSyncTimestamp', lastSyncTimestamp);
-        renderAll();
-    }
+    async function renderAll() { 
+        const { data: prospectsData, error: prospectsError } = await supabase
+            .from('prospects')
+            .select('*');
 
-    function renderAll() { 
+        const { data: availabilityData, error: availabilityError } = await supabase
+            .from('availability')
+            .select('*');
+
+        if (prospectsData) {
+            prospects = prospectsData;
+        }
+        if (availabilityData) {
+            availability = availabilityData.reduce((acc, curr) => {
+                acc[curr.date] = curr.time_slots;
+                return acc;
+            }, {});
+        }
+        
         populateDownlineDatalist();
         renderDashboard(); 
         renderProspectList(); 
@@ -885,7 +919,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('downline-name-group').style.display = e.target.value === 'downline' ? 'block' : 'none';
     });
 
-    document.getElementById('prospect-form').addEventListener('submit', (e) => {
+    document.getElementById('prospect-form').addEventListener('submit', async (e) => {
         e.preventDefault(); 
         const id = document.getElementById('prospect-id').value;
         const stpTime = document.getElementById('stp-datetime').value;
@@ -902,32 +936,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const tags = document.getElementById('tags').value.split(',').map(tag => tag.trim()).filter(tag => tag);
-        const index = prospects.findIndex(p => p.id === id);
+        const newNote = document.getElementById('notes').value;
         
-        if (id && index > -1) { // Edit
-            const p = prospects[index];
-            const originalStpTime = p.stpTime;
-            p.name = document.getElementById('name').value; p.phone = document.getElementById('phone').value;
-            p.age = document.getElementById('age').value; p.occupation = document.getElementById('occupation').value;
-            p.tags = tags; p.stpTime = stpTime;
-            p.ownerType = ownerType; p.downlineName = downlineName;
-            const newNote = document.getElementById('notes').value;
-            if (newNote) p.notes.push({ date: new Date().toISOString(), content: `[EDIT] ${newNote}` });
-            if (originalStpTime !== p.stpTime) {
-                addBackAvailability(originalStpTime);
-                updateAvailability(p.stpTime);
+        const prospectData = {
+            name: document.getElementById('name').value,
+            phone: document.getElementById('phone').value,
+            age: document.getElementById('age').value,
+            occupation: document.getElementById('occupation').value,
+            tags: tags,
+            stp_time: stpTime,
+            owner_type: ownerType,
+            downline_name: downlineName
+        };
+
+        if (id) { // Edit
+            const { data, error } = await supabase
+                .from('prospects')
+                .update(prospectData)
+                .eq('id', id);
+
+            if (error) {
+                console.error('Error updating prospect:', error);
+            } else {
+                 if (newNote) {
+                    const { data: currentProspect, error: fetchError } = await supabase
+                        .from('prospects')
+                        .select('notes')
+                        .eq('id', id)
+                        .single();
+
+                    if (currentProspect) {
+                        const updatedNotes = currentProspect.notes || [];
+                        updatedNotes.push({ date: new Date().toISOString(), content: `[EDIT] ${newNote}` });
+                        await supabase.from('prospects').update({ notes: updatedNotes }).eq('id', id);
+                    }
+                }
             }
         } else { // New
-            const prospectData = { id: Date.now().toString(), name: document.getElementById('name').value, phone: document.getElementById('phone').value, age: document.getElementById('age').value, occupation: document.getElementById('occupation').value, tags: tags, stpTime: stpTime, notes: [], status: 'STP', kitCounter: 0, gmsTime: null, statusHistory: [{ status: 'STP', date: new Date().toISOString() }], ownerType: ownerType, downlineName: downlineName };
-            const newNote = document.getElementById('notes').value;
-            if (newNote) prospectData.notes.push({ date: new Date().toISOString(), content: newNote });
-            prospects.push(prospectData);
-            updateAvailability(prospectData.stpTime);
+            prospectData.notes = newNote ? [{ date: new Date().toISOString(), content: newNote }] : [];
+            const { data, error } = await supabase
+                .from('prospects')
+                .insert([prospectData]);
+            if (error) {
+                console.error('Error creating prospect:', error);
+            }
         }
-        saveAllData(); prospectModal.style.display = 'none';
+        
+        prospectModal.style.display = 'none';
     });
 
-    document.getElementById('action-form').addEventListener('submit', (e) => { 
+    document.getElementById('action-form').addEventListener('submit', async (e) => { 
         e.preventDefault(); 
         const id = document.getElementById('action-prospect-id').value; 
         const action = document.getElementById('action-type').value; 
@@ -951,67 +1009,81 @@ document.addEventListener('DOMContentLoaded', () => {
         if (action === 'not_joining') confirmAction = confirm(translations[currentLang].confirmNotJoining);
 
         if (!confirmAction) return;
+        
+        let updateData = {};
 
         switch(action) {
             case 'schedule_gms': 
-                addBackAvailability(p.gmsTime);
-                p.status = 'GMS_Appointment'; p.gmsTime = gmsTime; p.kitCounter = 0; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); 
-                updateAvailability(p.gmsTime);
+                updateData = { status: 'GMS_Appointment', gms_time: gmsTime, kit_counter: 0 };
                 break;
             case 'edit_gms':
-                const originalGmsTime = p.gmsTime;
-                // Check for double booking, excluding the current prospect's original time slot
-                if (isTimeSlotBooked(gmsTime, p.id)) {
-                    alert(translations[currentLang].errorDoubleBooking);
-                    return; // Stop the function if the new time is booked
-                }
-                addBackAvailability(originalGmsTime); // Free up the old time slot
-                p.gmsTime = gmsTime; // Assign the new time
-                updateAvailability(p.gmsTime); // Book the new time slot
-                p.statusHistory.push({ status: 'GMS_Rescheduled', date: new Date().toISOString() }); // Add a history entry
+                updateData = { gms_time: gmsTime };
                 break;
-            case 'kit_stp': p.status = 'KIT_STP'; p.kitCounter = 1; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); p.tags.push('FollowUp-1'); break;
-            case 'kit_gms': p.status = 'KIT_GMS'; p.kitCounter = 1; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); p.tags.push('FollowUp-1'); break;
-            case 'disqualify': p.status = 'Disqualified'; break; case 'not_joining': p.status = 'Not_Joining'; break;
-            case 'joined': p.status = 'Joined'; break;
-            case 'follow_up': p.kitCounter++; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); p.tags.push(`FollowUp-${p.kitCounter}`); break;
+            case 'kit_stp': 
+                updateData = { status: 'KIT_STP', kit_counter: 1 };
+                break;
+            case 'kit_gms': 
+                updateData = { status: 'KIT_GMS', kit_counter: 1 };
+                break;
+            case 'disqualify': 
+                updateData = { status: 'Disqualified' };
+                break;
+            case 'not_joining': 
+                updateData = { status: 'Not_Joining' };
+                break;
+            case 'joined': 
+                updateData = { status: 'Joined' };
+                break;
+            case 'follow_up': 
+                updateData = { kit_counter: p.kit_counter + 1 };
+                break;
         }
-        p.statusHistory.push({ status: p.status, date: new Date().toISOString() }); 
-        saveAllData(); 
+
+        const { data, error } = await supabase
+            .from('prospects')
+            .update(updateData)
+            .eq('id', id);
+
+        if (error) {
+            console.error('Error updating prospect status:', error);
+        }
+        
         actionModal.style.display = 'none';
     });
 
     function openActionModal(id, action) {
-        document.getElementById('action-form').reset(); gmsPicker.clear(); document.getElementById('action-prospect-id').value = id; document.getElementById('action-type').value = action; const gmsGroup = document.getElementById('gms-schedule-group'); gmsGroup.style.display = action === 'schedule_gms' || 'edit_gms' ? 'block' : 'none'; document.getElementById('gms-datetime').required = action === 'schedule_gms' || action === 'edit_gms'; actionModal.style.display = 'flex';
+        document.getElementById('action-form').reset(); gmsPicker.clear(); document.getElementById('action-prospect-id').value = id; document.getElementById('action-type').value = action; const gmsGroup = document.getElementById('gms-schedule-group'); gmsGroup.style.display = action === 'schedule_gms' || action === 'edit_gms' ? 'block' : 'none'; document.getElementById('gms-datetime').required = action === 'schedule_gms' || action === 'edit_gms'; actionModal.style.display = 'flex';
     }
     function openEditModal(prospectId) {
-        const index = prospects.findIndex(p => p.id === prospectId); if (index === -1) return;
-        const p = prospects[index];
+        const p = prospects.find(p => p.id == prospectId);
+        if (!p) return;
+        
         document.getElementById('prospect-form').reset();
         document.getElementById('modal-title').textContent = translations[currentLang].modalTitleEdit;
         document.getElementById('prospect-id').value = p.id; document.getElementById('name').value = p.name;
         document.getElementById('phone').value = p.phone; document.getElementById('age').value = p.age;
         document.getElementById('occupation').value = p.occupation; document.getElementById('tags').value = p.tags ? p.tags.join(', ') : '';
-        document.getElementById('owner-type').value = p.ownerType || 'user';
+        document.getElementById('owner-type').value = p.owner_type || 'user';
         const downlineGroup = document.getElementById('downline-name-group');
-        if (p.ownerType === 'downline') {
+        if (p.owner_type === 'downline') {
             downlineGroup.style.display = 'block';
-            document.getElementById('downline-name').value = p.downlineName;
+            document.getElementById('downline-name').value = p.downline_name;
         } else {
             downlineGroup.style.display = 'none';
         }
-        stpPicker.setDate(p.stpTime, true); document.getElementById('notes').value = ''; 
+        stpPicker.setDate(p.stp_time, true); document.getElementById('notes').value = ''; 
         prospectModal.style.display = 'flex';
     }
-    function deleteProspect(prospectId) {
+    async function deleteProspect(prospectId) {
         if (confirm(translations[currentLang].confirmDelete)) {
-            const prospectToDelete = prospects.find(p => p.id === prospectId);
-            if (prospectToDelete) {
-                addBackAvailability(prospectToDelete.stpTime);
-                addBackAvailability(prospectToDelete.gmsTime);
+            const { error } = await supabase
+                .from('prospects')
+                .delete()
+                .eq('id', prospectId);
+
+            if (error) {
+                console.error('Error deleting prospect:', error);
             }
-            prospects = prospects.filter(p => p.id !== prospectId);
-            saveAllData();
         }
     }
 
@@ -1057,10 +1129,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const newApptTime = new Date(dateTimeString).getTime();
         const thirtyMinutes = 30 * 60 * 1000;
         return prospects.some(p => {
-            if (p.id === prospectIdToExclude) return false;
-            const stpTime = p.stpTime ? new Date(p.stpTime).getTime() : 0;
+            if (p.id == prospectIdToExclude) return false;
+            const stpTime = p.stp_time ? new Date(p.stp_time).getTime() : 0;
             if (stpTime && Math.abs(newApptTime - stpTime) < thirtyMinutes) return true;
-            const gmsTime = p.gmsTime ? new Date(p.gmsTime).getTime() : 0;
+            const gmsTime = p.gms_time ? new Date(p.gms_time).getTime() : 0;
             if (gmsTime && Math.abs(newApptTime - gmsTime) < thirtyMinutes) return true;
             return false;
         });
@@ -1074,8 +1146,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = new Date(); 
         let upcoming = [];
         prospects.forEach(p => {
-            if (p.status === 'STP' && p.stpTime && new Date(p.stpTime) > now) upcoming.push({ p, type: 'STP', date: new Date(p.stpTime) });
-            if (p.status === 'GMS_Appointment' && p.gmsTime && new Date(p.gmsTime) > now) upcoming.push({ p, type: 'GMS', date: new Date(p.gmsTime) });
+            if (p.status === 'STP' && p.stp_time && new Date(p.stp_time) > now) upcoming.push({ p, type: 'STP', date: new Date(p.stp_time) });
+            if (p.status === 'GMS_Appointment' && p.gms_time && new Date(p.gms_time) > now) upcoming.push({ p, type: 'GMS', date: new Date(p.gms_time) });
         });
         upcoming.sort((a, b) => a.date - b.date);
         if (upcoming.length === 0) appointmentsGrid.innerHTML = `<p>${translations[currentLang].noAppointmentsText}</p>`;
@@ -1085,7 +1157,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (followUps.length === 0) followUpsGrid.innerHTML = `<p>${translations[currentLang].noFollowUpsText}</p>`;
         else followUps.forEach(p => {
             const card = document.createElement('div'); card.className = 'reminder-card';
-            card.innerHTML = `<h3>${p.name}</h3><p><strong>${translations[currentLang].status}:</strong> ${translations[currentLang][p.status]}</p><p><strong>${translations[currentLang].kitCounter}:</strong> ${p.kitCounter}</p>
+            card.innerHTML = `<h3>${p.name}</h3><p><strong>${translations[currentLang].status}:</strong> ${translations[currentLang][p.status]}</p><p><strong>${translations[currentLang].kitCounter}:</strong> ${p.kit_counter}</p>
             <div class="prospect-actions"><button class="btn-primary" data-id="${p.id}" data-action="${p.status === 'KIT_STP' ? 'schedule_gms' : 'joined'}">${p.status === 'KIT_STP' ? translations[currentLang].actionScheduleGMS : translations[currentLang].actionJoined}</button>
             <button class="btn-warning" data-id="${p.id}" data-action="follow_up">${translations[currentLang].actionFollowUp}</button></div>`;
             followUpsGrid.appendChild(card);
@@ -1100,8 +1172,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         let upcoming = [];
         prospects.forEach(p => {
-            if (p.status === 'STP' && p.stpTime && new Date(p.stpTime) > now) upcoming.push({ p, type: 'STP', date: new Date(p.stpTime) });
-            if (p.status === 'GMS_Appointment' && p.gmsTime && new Date(p.gmsTime) > now) upcoming.push({ p, type: 'GMS', date: new Date(p.gmsTime) });
+            if (p.status === 'STP' && p.stp_time && new Date(p.stp_time) > now) upcoming.push({ p, type: 'STP', date: new Date(p.stp_time) });
+            if (p.status === 'GMS_Appointment' && p.gms_time && new Date(p.gms_time) > now) upcoming.push({ p, type: 'GMS', date: new Date(p.gms_time) });
         });
 
         const appointmentsToCopy = upcoming.filter(item => item.type === type);
@@ -1124,7 +1196,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 textToCopy += `名字 ：${item.p.name}\n`;
                 textToCopy += `号码 ：${item.p.phone || ''}\n`;
                 textToCopy += `年龄 ：${item.p.age || ''}\n`;
-                const lastNote = item.p.notes.length > 0 ? item.p.notes[item.p.notes.length - 1].content : '';
+                const lastNote = item.p.notes && item.p.notes.length > 0 ? item.p.notes[item.p.notes.length - 1].content : '';
                 textToCopy += `加入/不加入：${lastNote}\n`;
                 textToCopy += `邀约时间 ：${formattedDate}\n`;
             }
@@ -1182,9 +1254,9 @@ document.addEventListener('DOMContentLoaded', () => {
         let prospectsToDisplay = prospects;
 
         if (prospectViewFilter === 'user') {
-            prospectsToDisplay = prospects.filter(p => p.ownerType !== 'downline');
+            prospectsToDisplay = prospects.filter(p => p.owner_type !== 'downline');
         } else if (prospectViewFilter === 'downline') {
-            prospectsToDisplay = prospects.filter(p => p.ownerType === 'downline');
+            prospectsToDisplay = prospects.filter(p => p.owner_type === 'downline');
         }
 
         let filtered = prospectsToDisplay.filter(p => {
@@ -1193,7 +1265,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return matchesSearch && matchesStatus;
         });
 
-        filtered.sort((a, b) => { switch (sortBy) { case 'name_az': return a.name.localeCompare(b.name); case 'name_za': return b.name.localeCompare(a.name); case 'status': return a.status.localeCompare(b.status); case 'newest': default: return new Date(b.stpTime) - new Date(a.stpTime); } });
+        filtered.sort((a, b) => { switch (sortBy) { case 'name_az': return a.name.localeCompare(b.name); case 'name_za': return b.name.localeCompare(a.name); case 'status': return a.status.localeCompare(b.status); case 'newest': default: return new Date(b.stp_time) - new Date(a.stp_time); } });
 
         const startIndex = (currentPage - 1) * PROSPECTS_PER_PAGE;
         const endIndex = startIndex + PROSPECTS_PER_PAGE;
@@ -1207,10 +1279,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         paginatedProspects.forEach(p => {
             const card = document.createElement('div'); card.className = 'prospect-card'; const statusText = translations[currentLang][p.status] || p.status;
-            let kitInfo = p.status.startsWith('KIT_') ? ` (${translations[currentLang].kitCounter}: ${p.kitCounter})` : '';
+            let kitInfo = p.status.startsWith('KIT_') ? ` (${translations[currentLang].kitCounter}: ${p.kit_counter})` : '';
             let tagsHtml = p.tags && p.tags.length ? `<div class="tags-container">${p.tags.map(tag => `<span class="tag-badge">${tag}</span>`).join('')}</div>` : '';
-            let notesHtml = p.notes.map(note => `<small>${formatDate(note.date)}: ${note.content}</small>`).join('<br>');
-            let downlineHtml = p.ownerType === 'downline' ? `<div class="downline-info">👤 ${translations[currentLang].downlineInfo}${p.downlineName}</div>` : '';
+            let notesHtml = p.notes && p.notes.map(note => `<small>${formatDate(note.date)}: ${note.content}</small>`).join('<br>') || '';
+            let downlineHtml = p.owner_type === 'downline' ? `<div class="downline-info">👤 ${translations[currentLang].downlineInfo}${p.downline_name}</div>` : '';
             card.innerHTML = `
                 <div class="card-header">
                     <h3>${p.name} <span class="status-badge status-${p.status}">${statusText}${kitInfo}</span></h3>
@@ -1230,16 +1302,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span><strong>${translations[currentLang].occupation}:</strong> ${p.occupation||'N/A'}</span>
                 </p>
                 <p class="prospect-meta">
-                    <span><strong>${translations[currentLang].stp_time}:</strong> ${formatDate(p.stpTime)}</span><span class="separator">|</span>
-                    <span><strong>GMS:</strong> ${formatDate(p.gmsTime)}</span>
+                    <span><strong>${translations[currentLang].stp_time}:</strong> ${formatDate(p.stp_time)}</span><span class="separator">|</span>
+                    <span><strong>GMS:</strong> ${formatDate(p.gms_time)}</span>
                 </p>
                 <div><strong>${translations[currentLang].notes}:</strong><br>${notesHtml}</div>
                 <div class="prospect-actions"></div>`;
             const actionsDiv = card.querySelector('.prospect-actions');
             if (p.status === 'STP') { actionsDiv.innerHTML += `<button class="btn-primary" data-action="schedule_gms" data-id="${p.id}">${translations[currentLang].actionScheduleGMS}</button><button class="btn-secondary" data-action="kit_stp" data-id="${p.id}">${translations[currentLang].actionKeepInTouch}</button><button class="btn-danger" data-action="disqualify" data-id="${p.id}">${translations[currentLang].actionDisqualify}</button>`;
-            } else if (p.status === 'KIT_STP') { actionsDiv.innerHTML += `<button class="btn-primary" data-action="schedule_gms" data-id="${p.id}">${translations[currentLang].actionScheduleGMS}</button><button class="btn-warning" data-action="follow_up" data-id="${p.id}">${translations[currentLang].actionFollowUp} (${p.kitCounter})</button><button class="btn-danger" data-action="disqualify" data-id="${p.id}">${translations[currentLang].actionDisqualify}</button>`;
+            } else if (p.status === 'KIT_STP') { actionsDiv.innerHTML += `<button class="btn-primary" data-action="schedule_gms" data-id="${p.id}">${translations[currentLang].actionScheduleGMS}</button><button class="btn-warning" data-action="follow_up" data-id="${p.id}">${translations[currentLang].actionFollowUp} (${p.kit_counter})</button><button class="btn-danger" data-action="disqualify" data-id="${p.id}">${translations[currentLang].actionDisqualify}</button>`;
             } else if (p.status === 'GMS_Appointment') { actionsDiv.innerHTML += `<button class="btn-success" data-action="joined" data-id="${p.id}">${translations[currentLang].actionJoined}</button><button class="btn-primary" data-action="edit_gms" data-id="${p.id}">${translations[currentLang].actionEditGMS}</button><button class="btn-secondary" data-action="kit_gms" data-id="${p.id}">${translations[currentLang].actionKeepInTouch}</button><button class="btn-danger" data-action="not_joining" data-id="${p.id}">${translations[currentLang].actionNotJoining}</button>`;
-            } else if (p.status === 'KIT_GMS') { actionsDiv.innerHTML += `<button class="btn-success" data-action="joined" data-id="${p.id}">${translations[currentLang].actionJoined}</button><button class="btn-warning" data-action="follow_up" data-id="${p.id}">${translations[currentLang].actionFollowUp} (${p.kitCounter})</button><button class="btn-danger" data-action="not_joining" data-id="${p.id}">${translations[currentLang].actionNotJoining}</button>`; }
+            } else if (p.status === 'KIT_GMS') { actionsDiv.innerHTML += `<button class="btn-success" data-action="joined" data-id="${p.id}">${translations[currentLang].actionJoined}</button><button class="btn-warning" data-action="follow_up" data-id="${p.id}">${translations[currentLang].actionFollowUp} (${p.kit_counter})</button><button class="btn-danger" data-action="not_joining" data-id="${p.id}">${translations[currentLang].actionNotJoining}</button>`; }
             listDiv.appendChild(card);
         });
 
@@ -1293,27 +1365,30 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let prospectsToAnalyze = prospects;
         if (analyticsView === 'user') {
-            prospectsToAnalyze = prospects.filter(p => p.ownerType !== 'downline');
+            prospectsToAnalyze = prospects.filter(p => p.owner_type !== 'downline');
         } else {
             const selectedDownline = document.getElementById('downline-filter').value;
-            prospectsToAnalyze = prospects.filter(p => p.ownerType === 'downline' && (selectedDownline === 'all' || p.downlineName === selectedDownline));
+            prospectsToAnalyze = prospects.filter(p => p.owner_type === 'downline' && (selectedDownline === 'all' || p.downline_name === selectedDownline));
         }
 
         let newStps = 0, newGms = 0, newJoins = 0, newDisqualified = 0;
         prospectsToAnalyze.forEach(p => {
-            const initialStp = p.statusHistory.find(h => h.status === 'STP');
-            if(initialStp) {
-                const historyDate = new Date(initialStp.date);
-                if (historyDate.getFullYear() === year && historyDate.getMonth() + 1 === month) newStps++;
+            const stpDate = new Date(p.created_at);
+            if (stpDate.getFullYear() === year && stpDate.getMonth() + 1 === month) {
+                newStps++;
             }
-            p.statusHistory.forEach(history => {
-                const historyDate = new Date(history.date);
-                if (historyDate.getFullYear() === year && historyDate.getMonth() + 1 === month) {
-                    if (history.status === 'GMS_Appointment') newGms++;
-                    if (history.status === 'Joined') newJoins++;
-                    if (history.status === 'Disqualified' || history.status === 'Not_Joining') newDisqualified++;
+            if (p.gms_time) {
+                const gmsDate = new Date(p.gms_time);
+                if (gmsDate.getFullYear() === year && gmsDate.getMonth() + 1 === month) {
+                    newGms++;
                 }
-            });
+            }
+            if (p.status === 'Joined') {
+                newJoins++;
+            }
+             if (p.status === 'Disqualified' || p.status === 'Not_Joining') {
+                newDisqualified++;
+            }
         });
         const summaryDiv = document.getElementById('analytics-summary');
         const t = translations[currentLang].analytics;
@@ -1335,19 +1410,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let stps = 0, gms = 0, joins = 0, disqualified = 0;
             prospectsToAnalyze.forEach(p => {
-                const initialStp = p.statusHistory.find(h => h.status === 'STP');
-                if(initialStp) {
-                    const historyDate = new Date(initialStp.date);
-                    if (historyDate.getFullYear() === year && historyDate.getMonth() + 1 === month) stps++;
+                const stpDate = new Date(p.created_at);
+                if (stpDate.getFullYear() === year && stpDate.getMonth() + 1 === month) {
+                    stps++;
                 }
-                p.statusHistory.forEach(history => {
-                    const historyDate = new Date(history.date);
-                    if (historyDate.getFullYear() === year && historyDate.getMonth() + 1 === month) {
-                         if (history.status === 'GMS_Appointment') gms++;
-                         if (history.status === 'Joined') joins++;
-                         if (history.status === 'Disqualified' || history.status === 'Not_Joining') disqualified++;
+                if (p.gms_time) {
+                    const gmsDate = new Date(p.gms_time);
+                    if (gmsDate.getFullYear() === year && gmsDate.getMonth() + 1 === month) {
+                        gms++;
                     }
-                });
+                }
+                if (p.status === 'Joined') {
+                    joins++;
+                }
+                 if (p.status === 'Disqualified' || p.status === 'Not_Joining') {
+                    disqualified++;
+                }
             });
             data.datasets.stps.push(stps);
             data.datasets.gms.push(gms);
@@ -1422,7 +1500,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('downline-filter').addEventListener('change', renderAnalytics);
 
     function populateDownlineFilter() {
-        const downlineNames = [...new Set(prospects.filter(p => p.ownerType === 'downline' && p.downlineName).map(p => p.downlineName))];
+        const downlineNames = [...new Set(prospects.filter(p => p.owner_type === 'downline' && p.downline_name).map(p => p.downline_name))];
         const filterSelect = document.getElementById('downline-filter');
         const currentVal = filterSelect.value;
         filterSelect.innerHTML = `<option value="all">${translations[currentLang].allDownlinesOption}</option>`;
@@ -1433,7 +1511,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function populateDownlineDatalist() {
-        const downlineNames = [...new Set(prospects.filter(p => p.ownerType === 'downline' && p.downlineName).map(p => p.downlineName))];
+        const downlineNames = [...new Set(prospects.filter(p => p.owner_type === 'downline' && p.downline_name).map(p => p.downline_name))];
         const datalist = document.getElementById('downline-names-list');
         datalist.innerHTML = '';
         downlineNames.sort().forEach(name => {
@@ -1441,7 +1519,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    document.getElementById('clearData').addEventListener('click', () => { if (confirm(translations[currentLang].confirmClearData)) { prospects = []; availability = {}; lastSyncTimestamp = null; localStorage.clear(); alert(translations[currentLang].dataCleared); renderAll(); } });
+    document.getElementById('clearData').addEventListener('click', async () => { 
+        if (confirm(translations[currentLang].confirmClearData)) { 
+            const { error } = await supabase
+                .from('prospects')
+                .delete()
+                .eq('user_id', supabase.auth.user().id);
+
+            if (error) {
+                console.error('Error clearing data:', error);
+            } else {
+                alert(translations[currentLang].dataCleared);
+            }
+        } 
+    });
     
     document.getElementById('exportData').addEventListener('click', () => {
         if (prospects.length === 0 && Object.keys(availability).length === 0) return alert('No data to export.');
@@ -1467,15 +1558,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const file = event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
             try {
                 const data = JSON.parse(e.target.result);
                 if (data && data.prospects && data.availability) {
                     if (confirm(translations[currentLang].importConfirm)) {
-                        prospects = data.prospects;
-                        availability = data.availability;
-                        lastSyncTimestamp = data.timestamp;
-                        saveAllData();
+                        // Clear existing data first
+                        await supabase.from('prospects').delete().eq('user_id', supabase.auth.user().id);
+                        await supabase.from('availability').delete().eq('user_id', supabase.auth.user().id);
+
+                        // Insert new data
+                        await supabase.from('prospects').insert(data.prospects);
+                        const availabilityToInsert = Object.keys(data.availability).map(date => ({ date, time_slots: data.availability[date] }));
+                        await supabase.from('availability').insert(availabilityToInsert);
+                        
                         alert(translations[currentLang].importSuccess);
                     }
                 } else {
@@ -1512,11 +1608,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const dayCell = document.createElement('div'); dayCell.className = 'calendar-day'; const thisDate = new Date(year, month, i); const today = new Date();
             if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) dayCell.classList.add('today');
             const dayNumber = document.createElement('div'); dayNumber.className = 'day-number'; dayNumber.textContent = i; dayCell.appendChild(dayNumber);
-            const appointmentsOnDay = prospects.filter(p => { const stpDate = p.stpTime ? new Date(p.stpTime) : null; const gmsDate = p.gmsTime ? new Date(p.gmsTime) : null; return (stpDate && stpDate.getDate() === i && stpDate.getMonth() === month && stpDate.getFullYear() === year) || (gmsDate && gmsDate.getDate() === i && gmsDate.getMonth() === month && gmsDate.getFullYear() === year); });
+            const appointmentsOnDay = prospects.filter(p => { const stpDate = p.stp_time ? new Date(p.stp_time) : null; const gmsDate = p.gms_time ? new Date(p.gms_time) : null; return (stpDate && stpDate.getDate() === i && stpDate.getMonth() === month && stpDate.getFullYear() === year) || (gmsDate && gmsDate.getDate() === i && gmsDate.getMonth() === month && gmsDate.getFullYear() === year); });
             if (appointmentsOnDay.length > 0) {
                 const dotsContainer = document.createElement('div'); dotsContainer.className = 'appointment-dots';
-                if (appointmentsOnDay.some(p => { const d = new Date(p.stpTime); return d.getDate() === i && d.getMonth() === month; })) dotsContainer.innerHTML += '<span class="appointment-dot dot-stp"></span>';
-                if (appointmentsOnDay.some(p => { const d = p.gmsTime ? new Date(p.gmsTime) : null; return d && d.getDate() === i && d.getMonth() === month; })) dotsContainer.innerHTML += '<span class="appointment-dot dot-gms"></span>';
+                if (appointmentsOnDay.some(p => { const d = new Date(p.stp_time); return d.getDate() === i && d.getMonth() === month; })) dotsContainer.innerHTML += '<span class="appointment-dot dot-stp"></span>';
+                if (appointmentsOnDay.some(p => { const d = p.gms_time ? new Date(p.gms_time) : null; return d && d.getDate() === i && d.getMonth() === month; })) dotsContainer.innerHTML += '<span class="appointment-dot dot-gms"></span>';
                 dayCell.appendChild(dotsContainer);
             }
             dayCell.style.cursor = 'pointer'; dayCell.onclick = () => showPlanner(thisDate);
@@ -1532,16 +1628,16 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('planner-title').textContent = `${date.toLocaleDateString(currentLang === 'zh-CN' ? 'zh-Hans-CN' : 'en-US', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})} - ${t.plannerTitle}`;
         const apptList = document.getElementById('planner-appointments-list');
         apptList.innerHTML = '';
-        const appointmentsOnDay = prospects.filter(p => { const stpDate = p.stpTime ? new Date(p.stpTime) : null; const gmsDate = p.gmsTime ? new Date(p.gmsTime) : null; return (stpDate && stpDate.toDateString() === date.toDateString()) || (gmsDate && gmsDate.toDateString() === date.toDateString()); });
+        const appointmentsOnDay = prospects.filter(p => { const stpDate = p.stp_time ? new Date(p.stp_time) : null; const gmsDate = p.gms_time ? new Date(p.gms_time) : null; return (stpDate && stpDate.toDateString() === date.toDateString()) || (gmsDate && gmsDate.toDateString() === date.toDateString()); });
         if (appointmentsOnDay.length === 0) { apptList.innerHTML = `<li>${t.noAppointmentsToday}</li>`; } else {
             appointmentsOnDay.forEach(p => {
-                let ownerInfo = p.ownerType === 'downline' ? ` (${p.downlineName})` : '';
+                let ownerInfo = p.owner_type === 'downline' ? ` (${p.downline_name})` : '';
                 const formatTime = (timeStr) => {
                     const time = new Date(timeStr);
                     return currentLang === 'zh-CN' ? formatChineseTime(time) : time.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true});
                 };
-                if (p.stpTime && new Date(p.stpTime).toDateString() === date.toDateString()) apptList.innerHTML += `<li>🔵 <strong>STP:</strong> ${p.name}${ownerInfo} - ${formatTime(p.stpTime)}</li>`;
-                if (p.gmsTime && new Date(p.gmsTime).toDateString() === date.toDateString()) apptList.innerHTML += `<li>🟠 <strong>GMS:</strong> ${p.name}${ownerInfo} - ${formatTime(p.gmsTime)}</li>`;
+                if (p.stp_time && new Date(p.stp_time).toDateString() === date.toDateString()) apptList.innerHTML += `<li>🔵 <strong>STP:</strong> ${p.name}${ownerInfo} - ${formatTime(p.stp_time)}</li>`;
+                if (p.gms_time && new Date(p.gms_time).toDateString() === date.toDateString()) apptList.innerHTML += `<li>🟠 <strong>GMS:</strong> ${p.name}${ownerInfo} - ${formatTime(p.gms_time)}</li>`;
             });
         }
         const timeline = document.getElementById('planner-timeline-slots');
@@ -1555,7 +1651,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tempDate = new Date(2000, 0, 1, hour, min);
                 slotBtn.textContent = (currentLang === 'zh-CN') ? formatChineseTime(tempDate) : tempDate.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true});
                 const isBooked = appointmentsOnDay.some(p => {
-                    const stp = p.stpTime ? new Date(p.stpTime) : null; const gms = p.gmsTime ? new Date(p.gmsTime) : null;
+                    const stp = p.stp_time ? new Date(p.stp_time) : null; const gms = p.gms_time ? new Date(p.gms_time) : null;
                     const slotStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, min);
                     const slotEnd = new Date(slotStart.getTime() + 29 * 60000);
                     return (stp && stp >= slotStart && stp <= slotEnd) || (gms && gms >= slotStart && gms <= slotEnd);
@@ -1569,52 +1665,20 @@ document.addEventListener('DOMContentLoaded', () => {
         plannerModal.style.display = 'flex';
     }
 
-    document.getElementById('save-availability-btn').addEventListener('click', () => {
+    document.getElementById('save-availability-btn').addEventListener('click', async () => {
         const dateKey = `${currentPlannerDate.getFullYear()}-${String(currentPlannerDate.getMonth() + 1).padStart(2, '0')}-${String(currentPlannerDate.getDate()).padStart(2, '0')}`;
         const availableSlots = Array.from(document.querySelectorAll('#planner-timeline-slots .time-slot.available')).map(slot => slot.dataset.time);
-        if (availableSlots.length > 0) {
-            availability[dateKey] = availableSlots;
-        } else {
-            delete availability[dateKey];
+        
+        const { error } = await supabase
+            .from('availability')
+            .upsert({ date: dateKey, time_slots: availableSlots, user_id: supabase.auth.user().id }, { onConflict: 'date, user_id' });
+
+        if (error) {
+            console.error('Error saving availability:', error);
         }
-        saveAllData();
+
         plannerModal.style.display = 'none';
     });
-    
-    function getSlotFromTime(date) {
-        if (!date) return null;
-        const minutes = date.getMinutes() < 30 ? '00' : '30';
-        return `${String(date.getHours()).padStart(2, '0')}:${minutes}`;
-    }
-
-    function updateAvailability(dateTimeString) {
-        if (!dateTimeString) return;
-        const date = new Date(dateTimeString);
-        const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        const timeSlot = getSlotFromTime(date);
-        
-        if (availability[dateKey]) {
-            availability[dateKey] = availability[dateKey].filter(slot => slot !== timeSlot);
-            if (availability[dateKey].length === 0) {
-                delete availability[dateKey];
-            }
-        }
-    }
-
-    function addBackAvailability(dateTimeString) {
-        if (!dateTimeString) return;
-        const date = new Date(dateTimeString);
-        const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        const timeSlot = getSlotFromTime(date);
-        
-        if (!availability[dateKey]) {
-            availability[dateKey] = [];
-        }
-        if (!availability[dateKey].includes(timeSlot)) {
-            availability[dateKey].push(timeSlot);
-            availability[dateKey].sort();
-        }
-    }
     
     function renderAvailableSlotsSidebar() {
         const listContainer = document.getElementById('available-slots-list');
@@ -1687,11 +1751,11 @@ document.addEventListener('DOMContentLoaded', () => {
             let appointmentTime = null;
             let appointmentType = '';
 
-            if (p.status === 'STP' && p.stpTime) {
-                appointmentTime = new Date(p.stpTime);
+            if (p.status === 'STP' && p.stp_time) {
+                appointmentTime = new Date(p.stp_time);
                 appointmentType = 'STP';
-            } else if (p.status === 'GMS_Appointment' && p.gmsTime) {
-                appointmentTime = new Date(p.gmsTime);
+            } else if (p.status === 'GMS_Appointment' && p.gms_time) {
+                appointmentTime = new Date(p.gms_time);
                 appointmentType = 'GMS';
             }
 
@@ -1739,23 +1803,82 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 4. Finally, set up background tasks
         setupNotifications();
+
+        // --- NEW: REAL-TIME LISTENER ---
+        supabase
+          .from('prospects')
+          .on('*', payload => {
+            console.log('Change received!', payload);
+            // A change happened, just re-fetch and re-render everything!
+            renderAll();
+          })
+          .subscribe();
+
+        // Do the same for availability
+         supabase
+          .from('availability')
+          .on('*', payload => {
+            console.log('Availability change received!', payload);
+            renderAll();
+          })
+          .subscribe();
     }
 
-    // This logic handles the loading screen and then starts the app
-    if (!sessionStorage.getItem('welcomeShown')) {
-        setTimeout(() => {
-            document.getElementById('loading-screen').classList.add('hidden');
-            startApp(); // Run the startup sequence
-        }, 2000);
-        sessionStorage.setItem('welcomeShown', 'true');
-    } else {
+    // --- START: CORRECTED AUTH LOGIC & APP STARTUP ---
+    const authContainer = document.getElementById('auth-container');
+    const mainApp = document.getElementById('main-app');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    document.getElementById('login-btn').addEventListener('click', async () => {
+        const { error } = await supabase.auth.signIn({
+            email: document.getElementById('auth-email').value,
+            password: document.getElementById('auth-password').value,
+        });
+        if (error) alert(error.message);
+    });
+
+    document.getElementById('signup-btn').addEventListener('click', async () => {
+        const { error } = await supabase.auth.signUp({
+            email: document.getElementById('auth-email').value,
+            password: document.getElementById('auth-password').value,
+        });
+        if (error) alert(error.message);
+        else alert('Sign up successful! Please check your email to verify.');
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+        await supabase.auth.signOut();
+    });
+
+    // This function decides what to show the user
+    function updateUserUI() {
+        const user = supabase.auth.user();
+        
+        // Hide loading screen regardless of login state
         document.getElementById('loading-screen').style.display = 'none';
-        startApp(); // Run the startup sequence
+
+        if (user) {
+            authContainer.style.display = 'none';
+            mainApp.style.display = 'flex';
+            logoutBtn.style.display = 'block';
+            startApp(); // Start the main app functionality
+        } else {
+            authContainer.style.display = 'block';
+            mainApp.style.display = 'none';
+            logoutBtn.style.display = 'none';
+        }
     }
 
-    // =======================================================
-    // END: APP INITIALIZATION LOGIC
-    // =======================================================
+    // Listen for auth state changes (login/logout) and update UI
+    supabase.auth.onAuthStateChange((event, session) => {
+        // No need to reload, just update the UI
+        updateUserUI();
+    });
+
+    // Initial UI check when the page loads
+    updateUserUI();
+    // --- END: CORRECTED AUTH LOGIC & APP STARTUP ---
+    
 });
 </script>
 </body>
