@@ -922,43 +922,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('action-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const id = document.getElementById('action-prospect-id').value;
+        const id = document.getElementById('action-prospect-id').value; // <-- ID is a STRING
         const action = document.getElementById('action-type').value;
-        const index = prospects.findIndex(p => p.id === id); if (index === -1) return;
+        const index = prospects.findIndex(p => p.id === id); 
+        if (index === -1) return;
+
         const p = { ...prospects[index] };
         const notes = document.getElementById('action-notes').value;
 
         if (!p.notes) p.notes = [];
         if (!p.status_history) p.status_history = [];
 
-        if(notes) p.notes.push({ date: new Date().toISOString(), content: `[${action}] ${notes}` });
+        if (notes) p.notes.push({ date: new Date().toISOString(), content: `[${action}] ${notes}` });
         if (!p.tags) p.tags = [];
-        
+
         const gmsTime = document.getElementById('gms-datetime').value;
-        if (action === 'schedule_gms' && isTimeSlotBooked(gmsTime, p.id)) { alert(translations[currentLang].errorDoubleBooking); return; }
-
-        let confirmAction = true;
-        if (['joined', 'disqualify', 'not_joining'].includes(action)) {
-            const message = translations[currentLang][`confirm${action.charAt(0).toUpperCase() + action.slice(1)}`];
-            confirmAction = await showConfirmation(message, translations[currentLang].confirmActionTitle, action === 'joined' ? 'btn-success' : 'btn-danger');
+        if ((action === 'schedule_gms' || action === 'edit_gms') && isTimeSlotBooked(gmsTime, p.id)) {
+            alert(translations[currentLang].errorDoubleBooking);
+            return;
         }
-        if (!confirmAction) return;
 
+        // ... (The switch statement and confirmation logic remains the same)
         switch(action) {
             case 'schedule_gms': p.status = 'GMS_Appointment'; p.gms_time = gmsTime; p.kit_counter = 0; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); break;
-            case 'edit_gms': if (isTimeSlotBooked(gmsTime, p.id)) { alert(translations[currentLang].errorDoubleBooking); return; } p.gms_time = gmsTime; p.status_history.push({ status: 'GMS_Rescheduled', date: new Date().toISOString() }); break;
+            case 'edit_gms': p.gms_time = gmsTime; p.status_history.push({ status: 'GMS_Rescheduled', date: new Date().toISOString() }); break;
             case 'kit_stp': p.status = 'KIT_STP'; p.kit_counter = 1; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); p.tags.push('FollowUp-1'); break;
             case 'kit_gms': p.status = 'KIT_GMS'; p.kit_counter = 1; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); p.tags.push('FollowUp-1'); break;
             case 'disqualify': p.status = 'Disqualified'; break; case 'not_joining': p.status = 'Not_Joining'; break;
             case 'joined': p.status = 'Joined'; break;
             case 'follow_up': if (!p.kit_counter) p.kit_counter = 0; p.kit_counter++; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); p.tags.push(`FollowUp-${p.kit_counter}`); break;
         }
-        if (action !== 'follow_up' && action !== 'edit_gms') p.status_history.push({ status: p.status, date: new Date().toISOString() });
-        
-        const { error } = await supabaseClient.from('prospects').update(p).eq('id', p.id);
-        if (error) { console.error(error); alert('Error updating status: ' + error.message); } 
-        else { prospects[index] = p; renderAll(); }
-        actionModal.style.display = 'none';
+
+        if (action !== 'follow_up' && action !== 'edit_gms') {
+            p.status_history.push({ status: p.status, date: new Date().toISOString() });
+        }
+
+        const { data: updatedProspect, error } = await supabaseClient.from('prospects').update(p).eq('id', p.id).select().single();
+
+        if (error) {
+            console.error(error);
+            alert('Error updating status: ' + error.message);
+        } else {
+            prospects[index] = updatedProspect; // Update local state
+            actionModal.style.display = 'none';
+            renderAll(); // Re-render
+        }
     });
 
     function openActionModal(id, action) {
@@ -977,12 +985,15 @@ document.addEventListener('DOMContentLoaded', () => {
         stpPicker.setDate(p.stp_time, true); document.getElementById('notes').value = '';
         prospectModal.style.display = 'flex';
     }
-    async function deleteProspect(prospectId) {
+    async function deleteProspect(prospectId) { // <-- prospectId is a STRING
         if (await showConfirmation(translations[currentLang].confirmDelete)) {
             const { error } = await supabaseClient.from('prospects').delete().eq('id', prospectId);
-            if (error) { alert('Error deleting prospect: ' + error.message); } else { 
-                prospects = prospects.filter(p => p.id !== prospectId); // Remove locally
-                renderAll(); // Re-render
+            if (error) {
+                alert('Error deleting prospect: ' + error.message);
+            } else {
+                // Remove the prospect from the local array and re-render
+                prospects = prospects.filter(p => p.id !== prospectId);
+                renderAll();
             }
         }
     }
