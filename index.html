@@ -820,7 +820,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const stpPicker = flatpickr("#stp-datetime", { enableTime: true, dateFormat: "Y-m-d H:i", time_24hr: true });
     const gmsPicker = flatpickr("#gms-datetime", { enableTime: true, dateFormat: "Y-m-d H:i", time_24hr: true });
-    const analyticsPicker = flatpickr("#analytics-month", { plugins: [ new monthSelectPlugin({ shorthand: false, dateFormat: "Y-m", altFormat: "F Y" }) ], altInput: true, onChange: () => renderAnalytics() });
+    let analyticsPicker = null;
+
+    // ===== FIX #2: START ========
+    // This function is updated to use the `onReady` hook from flatpickr.
+    // This ensures that `renderAnalytics` is only called after the date picker
+    // is fully initialized and has a default value, fixing the race condition.
+    function initializeAnalyticsPicker() {
+        if (!analyticsPicker) { // Only create it once
+            analyticsPicker = flatpickr("#analytics-month", {
+                plugins: [new monthSelectPlugin({ shorthand: false, dateFormat: "Y-m", altFormat: "F Y" })],
+                altInput: true,
+                defaultDate: new Date(),
+                onReady: function() {
+                    // This hook ensures analytics render after the calendar is ready.
+                    renderAnalytics();
+                },
+                onChange: () => renderAnalytics(), // For subsequent user changes
+            });
+        }
+    }
+    // ===== FIX #2: END ==========
     
     const prospectModal = document.getElementById('prospect-modal');
     const actionModal = document.getElementById('action-modal');
@@ -845,16 +865,31 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target == confirmModal) { confirmModal.style.display = 'none'; }
     });
     
-    document.querySelectorAll('.tab-button').forEach(button => { button.addEventListener('click', () => { document.querySelectorAll('.tab-button, .tab-content').forEach(el => el.classList.remove('active')); button.classList.add('active'); document.getElementById(button.dataset.tab).classList.add('active'); if(button.dataset.tab === 'analytics') { populateDownlineFilter(); renderAnalytics(); } }); });
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.tab-button, .tab-content').forEach(el => el.classList.remove('active'));
+            button.classList.add('active');
+            document.getElementById(button.dataset.tab).classList.add('active');
+
+            // ===== FIX #2: MODIFICATION ========
+            // The direct call to renderAnalytics() is removed from here.
+            // The `onReady` hook in `initializeAnalyticsPicker` now handles the initial render.
+            if (button.dataset.tab === 'analytics') {
+                populateDownlineFilter();
+                initializeAnalyticsPicker(); 
+            }
+        });
+    });
     
     document.getElementById('owner-type').addEventListener('change', (e) => { document.getElementById('downline-name-group').style.display = e.target.value === 'downline' ? 'block' : 'none'; });
 
     // ============================
     // ===== FIX #1: START ========
-    // Reworked the prospect form submission to be more efficient and reliable.
-    // Instead of reloading all prospects, it now gets the saved record back
-    // from the database and updates the local list directly.
-    // This fixes the issues with dashboard/calendar not updating immediately.
+    // Reworked the prospect form submission logic.
+    // Instead of trying to update the local data manually, this version simply
+    // reloads all prospects from the database after a successful save.
+    // This is a more robust solution that guarantees the UI will always show the correct data.
+    // This single change fixes issues #1, #2, and #3.
     // ============================
     document.getElementById('prospect-form').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -863,12 +898,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const id = document.getElementById('prospect-id').value;
         const isEditing = !!id;
         
-        // Find existing prospect data if we are editing
         let existingProspect = isEditing ? prospects.find(p => p.id === id) : {};
 
-        // Build the prospect data object for saving
         const prospectData = {
-            id: isEditing ? id : undefined, // Use string ID for editing
+            id: isEditing ? id : undefined,
             user_id: user.id,
             name: document.getElementById('name').value,
             phone: document.getElementById('phone').value,
@@ -885,44 +918,32 @@ document.addEventListener('DOMContentLoaded', () => {
             notes: isEditing ? (existingProspect.notes || []) : []
         };
 
-        // Add status history only if it's a new prospect
         if (!isEditing) {
             prospectData.status_history.push({ status: 'STP', date: new Date().toISOString() });
         }
 
-        // Add the new note from the form
         const newNote = document.getElementById('notes').value;
         if (newNote) {
             prospectData.notes.push({ date: new Date().toISOString(), content: (isEditing ? "[EDIT] " : "") + newNote });
         }
         
-        // Upsert the data and use .select().single() to get the saved record back
-        const { data: savedProspect, error } = await supabaseClient.from('prospects')
-            .upsert(prospectData)
-            .select()
-            .single();
+        const { error } = await supabaseClient.from('prospects')
+            .upsert(prospectData);
 
         if (error) {
             console.error(error);
             alert('Error saving prospect: ' + error.message);
         } else {
-            // Update the local 'prospects' array intelligently
-            if (isEditing) {
-                const index = prospects.findIndex(p => p.id === savedProspect.id);
-                if (index > -1) {
-                    prospects[index] = savedProspect; // Replace existing
-                }
-            } else {
-                prospects.push(savedProspect); // Add new
-            }
+            // Success! Close the modal.
             prospectModal.style.display = 'none';
-            renderAll(); // Re-render all components with the updated local data
+            // Now, reload all data from the database to ensure the UI is perfectly in sync.
+            await loadProspects(user); 
         }
     });
 
     document.getElementById('action-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const id = document.getElementById('action-prospect-id').value; // <-- ID is a STRING
+        const id = document.getElementById('action-prospect-id').value;
         const action = document.getElementById('action-type').value;
         const index = prospects.findIndex(p => p.id === id); 
         if (index === -1) return;
@@ -942,7 +963,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // ... (The switch statement and confirmation logic remains the same)
         switch(action) {
             case 'schedule_gms': p.status = 'GMS_Appointment'; p.gms_time = gmsTime; p.kit_counter = 0; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); break;
             case 'edit_gms': p.gms_time = gmsTime; p.status_history.push({ status: 'GMS_Rescheduled', date: new Date().toISOString() }); break;
@@ -963,9 +983,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
             alert('Error updating status: ' + error.message);
         } else {
-            prospects[index] = updatedProspect; // Update local state
+            prospects[index] = updatedProspect;
             actionModal.style.display = 'none';
-            renderAll(); // Re-render
+            renderAll();
         }
     });
 
@@ -985,13 +1005,12 @@ document.addEventListener('DOMContentLoaded', () => {
         stpPicker.setDate(p.stp_time, true); document.getElementById('notes').value = '';
         prospectModal.style.display = 'flex';
     }
-    async function deleteProspect(prospectId) { // <-- prospectId is a STRING
+    async function deleteProspect(prospectId) {
         if (await showConfirmation(translations[currentLang].confirmDelete)) {
             const { error } = await supabaseClient.from('prospects').delete().eq('id', prospectId);
             if (error) {
                 alert('Error deleting prospect: ' + error.message);
             } else {
-                // Remove the prospect from the local array and re-render
                 prospects = prospects.filter(p => p.id !== prospectId);
                 renderAll();
             }
@@ -1172,11 +1191,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('status-filter').addEventListener('change', () => { currentPage = 1; renderProspectList(); });
     document.getElementById('prospect-view-toggle').addEventListener('click', (e) => { if (e.target.tagName === 'BUTTON') { currentPage = 1; prospectViewFilter = e.target.dataset.filter; renderProspectList(); renderToggles(); } });
 
-    // ============================
-    // ===== FIX #2: START ========
-    // Made the analytics functions more robust. They now check if `status_history`
-    // exists before trying to read it, preventing errors with old data.
-    // ============================
     function renderAnalytics() {
         const monthInput = document.getElementById('analytics-month'); const selectedMonth = monthInput.value; if (!selectedMonth) return; const [year, month] = selectedMonth.split('-').map(Number);
         let prospectsToAnalyze = prospects;
@@ -1186,7 +1200,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let newStps = 0, newGms = 0, newJoins = 0, newDisqualified = 0;
         
         prospectsToAnalyze.forEach(p => {
-            if (!p.status_history || !Array.isArray(p.status_history)) return; // <-- ROBUSTNESS FIX
+            if (!p.status_history || !Array.isArray(p.status_history)) return;
 
             const initialStp = p.status_history.find(h => h.status === 'STP');
             if(initialStp) { const historyDate = new Date(initialStp.date); if (historyDate.getFullYear() === year && historyDate.getMonth() + 1 === month) newStps++; }
@@ -1211,7 +1225,7 @@ document.addEventListener('DOMContentLoaded', () => {
             data.labels.push(monthName); let stps = 0, gms = 0, joins = 0, disqualified = 0;
             
             prospectsToAnalyze.forEach(p => {
-                if (!p.status_history || !Array.isArray(p.status_history)) return; // <-- ROBUSTNESS FIX
+                if (!p.status_history || !Array.isArray(p.status_history)) return;
 
                 const initialStp = p.status_history.find(h => h.status === 'STP');
                 if(initialStp) { const historyDate = new Date(initialStp.date); if (historyDate.getFullYear() === year && historyDate.getMonth() + 1 === month) stps++; }
@@ -1225,9 +1239,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return data;
     }
-    // ============================
-    // ===== FIX #2: END ==========
-    // ============================
 
     function renderTrendChart(prospectsToAnalyze) {
         const ctx = document.getElementById('analyticsTrendChart').getContext('2d'); const trendData = getMonthlyTrendData(prospectsToAnalyze); const t = translations[currentLang].analytics;
@@ -1415,7 +1426,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const logoutButton = document.querySelector('#logout-btn'); if(logoutButton) logoutButton.style.display = 'block';
         if (user && user.email) { document.getElementById('user-email-sidebar').textContent = user.email; document.getElementById('user-email-settings').textContent = user.email; document.getElementById('user-info-sidebar').style.display = 'block'; }
         await loadProspects(user);
-        try { const now = new Date(); analyticsPicker.setDate(now, true); } catch (error) { console.error("Failed to initialize analytics picker:", error); }
     }
     
     async function checkUserSession() {
