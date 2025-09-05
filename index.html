@@ -3,14 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>安利对象跟进系统 (Amway Prospects Tracker)</title>
+    <title>安利对象跟进系统 (Amway Prospect Tracker)</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/style.css">
-
-    <link rel="manifest" href="manifest.json">
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
         :root {
             --primary-color: #0d47a1; 
@@ -254,108 +249,6 @@
         /* END: HOVER EFFECT ENHANCEMENTS                        */
         /* ======================================================= */
 
-        /* ======================================================= */
-        /* START: AUTHENTICATION STYLES                          */
-        /* ======================================================= */
-        #auth-container {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: var(--secondary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            padding: 20px;
-        }
-        .auth-card {
-            background: var(--card-bg);
-            padding: 30px 25px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            width: 100%;
-            max-width: 400px;
-            border-top: 5px solid var(--primary-color);
-        }
-        .auth-card h2 {
-            color: var(--primary-color);
-            text-align: center;
-            margin-top: 0;
-            margin-bottom: 25px;
-        }
-        .auth-card button {
-            width: 100%;
-            margin-top: 10px;
-        }
-        .auth-toggle-text {
-            font-size: 0.9em;
-            text-align: center;
-            margin-top: 20px;
-            color: var(--text-color-light);
-        }
-        .auth-toggle-text a {
-            color: var(--primary-color);
-            font-weight: 600;
-            text-decoration: none;
-        }
-        .auth-toggle-text a:hover {
-            text-decoration: underline;
-        }
-        .forgot-password {
-            display: block;
-            text-align: center;
-            font-size: 0.85em;
-            margin-top: 15px;
-            color: var(--text-color-light);
-        }
-        .user-info-widget {
-            background-color: var(--secondary-color);
-            padding: 10px 15px;
-            border-radius: var(--border-radius);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .user-info-widget p {
-            margin: 0;
-            font-size: 0.9em;
-        }
-        .user-info-widget span {
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-        /* ======================================================= */
-        /* END: AUTHENTICATION STYLES                            */
-        /* ======================================================= */
-
-        /* ======================================================= */
-        /* START: BUTTON & SETTINGS UI ENHANCEMENTS              */
-        /* ======================================================= */
-
-        /* Add space for icons in buttons */
-        button[data-icon]:before {
-            content: attr(data-icon);
-            margin-right: 8px;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        /* Style the buttons in the Danger Zone card */
-        .settings-card .controls {
-            display: flex;
-            flex-wrap: wrap; /* Allows buttons to wrap nicely if needed */
-            gap: 10px;
-        }
-
-        /* Specific style for the Logout button */
-        #logout-btn {
-            background-color: #6c757d; /* Use the secondary gray */
-        }
-        #logout-btn:hover {
-            background-color: #5a6268;
-        }
-
-        /* ======================================================= */
-        /* END: BUTTON & SETTINGS UI ENHANCEMENTS                */
-        /* ======================================================= */
-
         /* Tablet Responsive Styles */
         @media (max-width: 992px) { 
             body { padding: 15px; }
@@ -421,38 +314,6 @@
     </style>
 </head>
 <body>
-    <div id="auth-container" style="display: none;">
-        <div class="auth-card">
-            <div id="login-view">
-                <h2 id="auth-title-login"></h2>
-                <div class="form-group">
-                    <label for="login-email" id="auth-email-label-login"></label>
-                    <input type="email" id="login-email" autocomplete="email">
-                </div>
-                <div class="form-group">
-                    <label for="login-password" id="auth-password-label-login"></label>
-                    <input type="password" id="login-password" autocomplete="current-password">
-                </div>
-                <button id="login-btn" class="btn-primary"></button>
-                <p class="auth-toggle-text"><span id="auth-no-account"></span> <a href="#" id="show-signup-link"></a></p>
-                <a href="#" id="forgot-password-link" class="forgot-password"></a>
-            </div>
-
-            <div id="signup-view" style="display: none;">
-                <h2 id="auth-title-signup"></h2>
-                <div class="form-group">
-                    <label for="signup-email" id="auth-email-label-signup"></label>
-                    <input type="email" id="signup-email" autocomplete="email">
-                </div>
-                <div class="form-group">
-                    <label for="signup-password" id="auth-password-label-signup"></label>
-                    <input type="password" id="signup-password" autocomplete="new-password">
-                </div>
-                <button id="signup-btn" class="btn-primary"></button>
-                <p class="auth-toggle-text"><span id="auth-have-account"></span> <a href="#" id="show-login-link"></a></p>
-            </div>
-        </div>
-    </div>
     <div id="loading-screen">
         <div class="welcome-message">
             <span id="welcome-icon">💎</span> <span id="welcome-text">欢迎钻石们!</span>
@@ -525,14 +386,6 @@
                 </div>
                 <div id="settings" class="tab-content">
                     <h2 id="settingsTitle"></h2> 
-
-                    <div class="settings-card" style="border-left-color: #6c757d;">
-                        <h3 id="account-info-title"></h3>
-                        <p>
-                            <strong id="logged-in-as-label"></strong> 
-                            <span id="user-email-settings"></span>
-                        </p>
-                    </div>
                     <div class="settings-card" style="border-left-color: var(--primary-color);">
                         <h3 id="backupSyncTitle"></h3>
                         <p id="backupSyncDesc"></p>
@@ -552,13 +405,6 @@
                          <h3 id="dangerZoneTitle"></h3>
                          <p id="dangerZoneDesc"></p>
                          <button id="clearData" class="btn-danger"></button>
-                    </div>
-                    <div class="settings-card" style="border-left-color: var(--secondary-color); margin-top: 20px;">
-                        <h3 id="logout-title"></h3>
-                        <p id="logout-desc"></p>
-                        <div class="controls">
-                            <button id="logout-btn" class="btn-secondary" style="display: none;"></button>
-                        </div>
                     </div>
                 </div>
                  <div id="guide" class="tab-content">
@@ -642,12 +488,6 @@
             </div>
         </div>
         <div class="sidebar">
-            <div id="user-info-sidebar" class="user-info-widget" style="display: none;">
-                <p>
-                    <strong id="user-info-label"></strong>
-                    <span id="user-email-sidebar"></span>
-                </p>
-            </div>
             <h3 id="sidebar-title"></h3>
             <div id="available-slots-list"></div>
         </div>
@@ -732,12 +572,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // --- START: SUPABASE SETUP ---
-    const SUPABASE_URL = 'https://lgzjsgvsdcodepjsfjcx.supabase.co'; // Your URL
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnempzZ3ZzZGNvZGVwanNmamN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3Nzk0NjMsImV4cCI6MjA3MjM1NTQ2M30.Cwq1dL8DjTYYCbaNh6ELX3lubEiJIITWbjhRMYRmj_0';   // Paste the key you just copied
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    // --- END: SUPABASE SETUP ---
-
     let currentPage = 1;
     const PROSPECTS_PER_PAGE = 8;
     let trendChartInstance = null;
@@ -814,26 +648,7 @@ document.addEventListener('DOMContentLoaded', () => {
             guidePeriodLingchen: "凌晨", guidePeriodZaoshang: "早上", guidePeriodZhongwu: "中午", guidePeriodXiawu: "下午", guidePeriodBangwan: "傍晚", guidePeriodWanshang: "晚上",
             analyticsTrendTitle: "6个月表现趋势",
             copyStpBtn: "复制STP列表", copyGmsBtn: "复制GMS列表", copied: "已复制!",
-            welcome: "欢迎钻石们!",
-            'auth-title-login': "登录",
-            'auth-email-label-login': "邮箱地址",
-            'auth-password-label-login': "密码",
-            'login-btn': "登录",
-            'auth-no-account': "还没有账户？",
-            'show-signup-link': "立即注册",
-            'forgot-password-link': "忘记密码？",
-            'auth-title-signup': "创建账户",
-            'auth-email-label-signup': "邮箱地址",
-            'auth-password-label-signup': "密码",
-            'signup-btn': "注册",
-            'auth-have-account': "已经有账户了？",
-            'show-login-link': "立即登录",
-            'logout-btn': "登出",
-            'logout-title': "登出账户",
-            'logout-desc': "安全退出您的账户。您需要重新登录才能再次访问您的数据。",
-            'user-info-label': "当前用户:",
-            'account-info-title': "账户信息",
-            'logged-in-as-label': "登录身份:"
+            welcome: "欢迎钻石们!"
         },
         'en': {
             tabCalendar: "Calendar", appTitle: "Amway Prospect Tracker💎", addProspectBtn: "➕ Add New Prospect", tabDashboard: "Dashboard", tabAllProspects: "All Prospects", tabAnalytics: "Analytics", tabSettings: "Settings", tabGuide: "Guide",
@@ -909,40 +724,19 @@ document.addEventListener('DOMContentLoaded', () => {
             guideSettingsLi2: "<b>Clear All Data:</b> Use with caution! This will permanently delete all prospect records and availability data. This action cannot be undone.",
             analyticsTrendTitle: "6-Month Performance Trend",
             copyStpBtn: "Copy STP List", copyGmsBtn: "Copy GMS List", copied: "Copied!",
-            welcome: "Welcome Diamonds!",
-            'auth-title-login': "Login",
-            'auth-email-label-login': "Email Address",
-            'auth-password-label-login': "Password",
-            'login-btn': "Login",
-            'auth-no-account': "Don't have an account?",
-            'show-signup-link': "Sign up now",
-            'forgot-password-link': "Forgot password?",
-            'auth-title-signup': "Create an Account",
-            'auth-email-label-signup': "Email Address",
-            'auth-password-label-signup': "Password",
-            'signup-btn': "Sign Up",
-            'auth-have-account': "Already have an account?",
-            'show-login-link': "Log in",
-            'logout-btn': "Logout",
-            'logout-title': "Account Logout",
-            'logout-desc': "Securely sign out of your account. You will need to log in again to access your data.",
-            'user-info-label': "Current User:",
-            'account-info-title': "Account Information",
-            'logged-in-as-label': "Logged in as:"
+            welcome: "Welcome Diamonds!"
         }
     };
     let currentLang = 'zh-CN';
     let calendarDate = new Date();
+    let prospects = JSON.parse(localStorage.getItem('prospects')) || [];
+    let availability = JSON.parse(localStorage.getItem('availability')) || {};
     let prospectViewFilter = 'user'; 
     let analyticsView = 'user'; 
-    let prospects = [];
-    let availability = {};
-    let lastSyncTimestamp = null;
-  
+    let lastSyncTimestamp = localStorage.getItem('lastSyncTimestamp');
 
     function setLanguage(lang) {
         currentLang = lang; document.documentElement.lang = lang; const t = translations[lang];
-        // REPLACE your current 'elements' object with this complete one.
         const elements = {
             appTitle: t.appTitle, 'add-prospect-btn': t.addProspectBtn, 'lang-toggle': lang === 'zh-CN' ? 'English' : '中文', tabDashboard: t.tabDashboard, tabCalendar: t.tabCalendar,
             tabAllProspects: t.tabAllProspects, tabAnalytics: t.tabAnalytics, tabSettings: t.tabSettings, tabGuide: t.tabGuide,
@@ -958,6 +752,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'sidebar-title': t.sidebarTitle, 'availability-modal-title': t.availabilityModalTitle,
             'owner-type-label': t.ownerTypeLabel, 'owner-user-option': t.ownerUserOption, 'owner-downline-option': t.ownerDownlineOption,
             'downline-name-label': t.downlineNameLabel, 'downline-filter-label': t.downlineFilterLabel,
+            
             'guide-main-title': t.guideMainTitle, 
             'guide-getting-started-title': t.guideGettingStartedTitle, 
             'guide-getting-started-p1': t.guideGettingStartedP1,
@@ -965,24 +760,25 @@ document.addEventListener('DOMContentLoaded', () => {
             'guide-getting-started-li1': t.guideGettingStartedLi1,
             'guide-getting-started-li2': t.guideGettingStartedLi2,
             'guide-getting-started-li3': t.guideGettingStartedLi3,
+
             'guide-interface-title': t.guideInterfaceTitle, 
             'guide-interface-p1': t.guideInterfaceP1,
             'guide-interface-li1': t.guideInterfaceLi1,
             'guide-interface-li2': t.guideInterfaceLi2,
             'guide-interface-li3': t.guideInterfaceLi3,
+
             'guide-dashboard-title': t.guideDashboardTitle,
             'guide-dashboard-p1': t.guideDashboardP1,
             'guide-dashboard-li1': t.guideDashboardLi1,
             'guide-dashboard-li2': t.guideDashboardLi2,
             'guide-dashboard-li3': t.guideDashboardLi3,
+
             'guide-calendar-title': t.guideCalendarTitle,
             'guide-calendar-p1': t.guideCalendarP1,
             'guide-calendar-p2': t.guideCalendarP2,
-            'legend-stp-guide': t.legendStp, 
-            'legend-gms-guide': t.legendGms, 
-            'guide-calendar-li1': t.guideCalendarLi1, 
-            'guide-calendar-li2': t.guideCalendarLi2, 
-            'guide-calendar-li3': t.guideCalendarLi3,
+            'legend-stp-guide': t.legendStp, 'legend-gms-guide': t.legendGms, 
+            'guide-calendar-li1':t.guideCalendarLi1, 'guide-calendar-li2':t.guideCalendarLi2, 'guide-calendar-li3':t.guideCalendarLi3,
+
             'guide-prospects-title': t.guideProspectsTitle, 
             'guide-prospects-p1': t.guideProspectsP1,
             'guide-prospects-li1': t.guideProspectsLi1,
@@ -992,6 +788,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'guide-prospects-li4': t.guideProspectsLi4,
             'guide-prospects-li5': t.guideProspectsLi5,
             'guide-prospects-p3': t.guideProspectsP3,
+
             'guide-analytics-title': t.guideAnalyticsTitle,
             'guide-analytics-p1': t.guideAnalyticsP1,
             'guide-analytics-li1': t.guideAnalyticsLi1,
@@ -999,37 +796,15 @@ document.addEventListener('DOMContentLoaded', () => {
             'guide-analytics-li2': t.guideAnalyticsLi2,
             'guide-analytics-li3': t.guideAnalyticsLi3,
             'guide-analytics-p3': t.guideAnalyticsP3,
+
             'guide-settings-title': t.guideSettingsTitle,
             'guide-settings-p1': t.guideSettingsP1,
             'guide-settings-li1': t.guideSettingsLi1,
             'guide-settings-p2': t.guideSettingsP2,
             'guide-settings-p3': t.guideSettingsP3,
             'guide-settings-li2': t.guideSettingsLi2,
-            'analytics-trend-title': t.analyticsTrendTitle, 
-            'copy-stp-btn': t.copyStpBtn, 
-            'copy-gms-btn': t.copyGmsBtn, 
-            'welcome-text': t.welcome,
 
-            // --- FIX IS HERE: ADD THE AUTH FORM IDs ---
-            'auth-title-login': t['auth-title-login'],
-            'auth-email-label-login': t['auth-email-label-login'],
-            'auth-password-label-login': t['auth-password-label-login'],
-            'login-btn': t['login-btn'],
-            'auth-no-account': t['auth-no-account'],
-            'show-signup-link': t['show-signup-link'],
-            'forgot-password-link': t['forgot-password-link'],
-            'auth-title-signup': t['auth-title-signup'],
-            'auth-email-label-signup': t['auth-email-label-signup'],
-            'auth-password-label-signup': t['auth-password-label-signup'],
-            'signup-btn': t['signup-btn'],
-            'auth-have-account': t['auth-have-account'],
-            'show-login-link': t['show-login-link'],
-            'logout-btn': t['logout-btn'],
-            'logout-title': t['logout-title'],
-            'logout-desc': t['logout-desc'],
-            'user-info-label': t['user-info-label'],
-            'account-info-title': t['account-info-title'],
-            'logged-in-as-label': t['logged-in-as-label']
+            'analytics-trend-title': t.analyticsTrendTitle, 'copy-stp-btn': t.copyStpBtn, 'copy-gms-btn': t.copyGmsBtn, 'welcome-text': t.welcome
         };
         for (const id in elements) { 
             const el = document.getElementById(id);
@@ -1049,6 +824,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const sortSelect = document.getElementById('sort-by');
         sortSelect.innerHTML = `<option value="newest">${t.sort.newest}</option><option value="name_az">${t.sort.name_az}</option><option value="name_za">${t.sort.name_za}</option><option value="status">${t.sort.status}</option>`;
         
+    }
+    
+    function saveAllData() {
+        localStorage.setItem('prospects', JSON.stringify(prospects));
+        localStorage.setItem('availability', JSON.stringify(availability));
+        localStorage.setItem('lastSyncTimestamp', lastSyncTimestamp);
         renderAll();
     }
 
@@ -1104,51 +885,49 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('downline-name-group').style.display = e.target.value === 'downline' ? 'block' : 'none';
     });
 
-    document.getElementById('prospect-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        if (!user) return alert("You must be logged in to save.");
-
+    document.getElementById('prospect-form').addEventListener('submit', (e) => {
+        e.preventDefault(); 
         const id = document.getElementById('prospect-id').value;
-        const isEditing = !!id;
+        const stpTime = document.getElementById('stp-datetime').value;
+        const ownerType = document.getElementById('owner-type').value;
+        const downlineName = document.getElementById('downline-name').value.trim();
 
-        let existingProspect = isEditing ? prospects.find(p => p.id === id) : {};
-
-        const prospectData = {
-            id: isEditing ? id : undefined,
-            user_id: user.id,
-            name: document.getElementById('name').value,
-            phone: document.getElementById('phone').value,
-            age: document.getElementById('age').value || null,
-            occupation: document.getElementById('occupation').value,
-            tags: document.getElementById('tags').value.split(',').map(tag => tag.trim()).filter(tag => tag),
-            stp_time: document.getElementById('stp-datetime').value,
-            owner_type: document.getElementById('owner-type').value,
-            downline_name: document.getElementById('downline-name').value.trim(),
-            status: isEditing ? existingProspect.status : 'STP',
-            kit_counter: isEditing ? existingProspect.kitCounter : 0,
-            gms_time: isEditing ? existingProspect.gmsTime : null,
-            status_history: isEditing ? existingProspect.statusHistory : [{ status: 'STP', date: new Date().toISOString() }],
-            notes: isEditing ? existingProspect.notes : []
-        };
-
-        const newNote = document.getElementById('notes').value;
-        if (newNote) {
-            prospectData.notes.push({ date: new Date().toISOString(), content: (isEditing ? "[EDIT] " : "") + newNote });
+        if (ownerType === 'downline' && !downlineName) {
+            alert(translations[currentLang].errorDownlineNameRequired);
+            return;
+        }
+        if (isTimeSlotBooked(stpTime, id)) {
+            alert(translations[currentLang].errorDoubleBooking);
+            return;
         }
 
-        const { error } = await supabaseClient.from('prospects').upsert(prospectData, { onConflict: 'id' });
-
-        if (error) {
-            console.error(error);
-            alert('Error saving prospect: ' + error.message);
-        } else {
-            await startApp(user); // Reload all data from the database
-            prospectModal.style.display = 'none';
+        const tags = document.getElementById('tags').value.split(',').map(tag => tag.trim()).filter(tag => tag);
+        const index = prospects.findIndex(p => p.id === id);
+        
+        if (id && index > -1) { // Edit
+            const p = prospects[index];
+            const originalStpTime = p.stpTime;
+            p.name = document.getElementById('name').value; p.phone = document.getElementById('phone').value;
+            p.age = document.getElementById('age').value; p.occupation = document.getElementById('occupation').value;
+            p.tags = tags; p.stpTime = stpTime;
+            p.ownerType = ownerType; p.downlineName = downlineName;
+            const newNote = document.getElementById('notes').value;
+            if (newNote) p.notes.push({ date: new Date().toISOString(), content: `[EDIT] ${newNote}` });
+            if (originalStpTime !== p.stpTime) {
+                addBackAvailability(originalStpTime);
+                updateAvailability(p.stpTime);
+            }
+        } else { // New
+            const prospectData = { id: Date.now().toString(), name: document.getElementById('name').value, phone: document.getElementById('phone').value, age: document.getElementById('age').value, occupation: document.getElementById('occupation').value, tags: tags, stpTime: stpTime, notes: [], status: 'STP', kitCounter: 0, gmsTime: null, statusHistory: [{ status: 'STP', date: new Date().toISOString() }], ownerType: ownerType, downlineName: downlineName };
+            const newNote = document.getElementById('notes').value;
+            if (newNote) prospectData.notes.push({ date: new Date().toISOString(), content: newNote });
+            prospects.push(prospectData);
+            updateAvailability(prospectData.stpTime);
         }
+        saveAllData(); prospectModal.style.display = 'none';
     });
 
-    document.getElementById('action-form').addEventListener('submit', async (e) => {
+    document.getElementById('action-form').addEventListener('submit', (e) => { 
         e.preventDefault(); 
         const id = document.getElementById('action-prospect-id').value; 
         const action = document.getElementById('action-type').value; 
@@ -1198,16 +977,7 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'follow_up': p.kitCounter++; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); p.tags.push(`FollowUp-${p.kitCounter}`); break;
         }
         p.statusHistory.push({ status: p.status, date: new Date().toISOString() }); 
-        
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        const { error } = await supabaseClient.from('prospects').update(p).eq('id', p.id);
-
-        if (error) {
-            console.error(error);
-            alert('Error updating status: ' + error.message);
-        } else {
-            await startApp(user); // Reload data
-        }
+        saveAllData(); 
         actionModal.style.display = 'none';
     });
 
@@ -1233,15 +1003,15 @@ document.addEventListener('DOMContentLoaded', () => {
         stpPicker.setDate(p.stpTime, true); document.getElementById('notes').value = ''; 
         prospectModal.style.display = 'flex';
     }
-    async function deleteProspect(prospectId) {
+    function deleteProspect(prospectId) {
         if (confirm(translations[currentLang].confirmDelete)) {
-            const { error } = await supabaseClient.from('prospects').delete().eq('id', prospectId);
-            if (error) {
-                alert('Error deleting prospect: ' + error.message);
-            } else {
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                await startApp(user); // Reload data after deleting
+            const prospectToDelete = prospects.find(p => p.id === prospectId);
+            if (prospectToDelete) {
+                addBackAvailability(prospectToDelete.stpTime);
+                addBackAvailability(prospectToDelete.gmsTime);
             }
+            prospects = prospects.filter(p => p.id !== prospectId);
+            saveAllData();
         }
     }
 
@@ -1671,27 +1441,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    document.getElementById('clearData').addEventListener('click', async () => {
-        if (confirm(translations[currentLang].confirmClearData)) {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if (user) {
-                // First, delete all related subscriptions to avoid foreign key constraints
-                await supabaseClient.from('subscriptions').delete().eq('user_id', user.id);
-                
-                // Then, delete all prospects
-                await supabaseClient.from('prospects').delete().eq('user_id', user.id);
-
-                // **NEW**: Delete all availability data
-                await supabaseClient.from('availability').delete().eq('user_id', user.id);
-                
-                prospects = [];
-                availability = {};
-                lastSyncTimestamp = null;
-                alert(translations[currentLang].dataCleared);
-                renderAll();
-            }
-        }
-    });
+    document.getElementById('clearData').addEventListener('click', () => { if (confirm(translations[currentLang].confirmClearData)) { prospects = []; availability = {}; lastSyncTimestamp = null; localStorage.clear(); alert(translations[currentLang].dataCleared); renderAll(); } });
     
     document.getElementById('exportData').addEventListener('click', () => {
         if (prospects.length === 0 && Object.keys(availability).length === 0) return alert('No data to export.');
@@ -1717,31 +1467,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const file = event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = async (e) => {
+        reader.onload = (e) => {
             try {
                 const data = JSON.parse(e.target.result);
-                if (data && data.prospects) {
+                if (data && data.prospects && data.availability) {
                     if (confirm(translations[currentLang].importConfirm)) {
-                        const { data: { user } } = await supabaseClient.auth.getUser();
-                        if (!user) return alert("You must be logged in to import data.");
-
-                        // Add user_id to each prospect before upserting
-                        const prospectsToImport = data.prospects.map(p => ({ ...p, user_id: user.id }));
-
-                        await supabaseClient.from('prospects').upsert(prospectsToImport, { onConflict: 'id' });
-                        
-                        // **NEW**: Import availability data
-                        if (data.availability) {
-                            const availabilityToImport = Object.entries(data.availability).map(([date, time_slots]) => ({
-                                user_id: user.id,
-                                date: date,
-                                time_slots: time_slots
-                            }));
-                            await supabaseClient.from('availability').upsert(availabilityToImport, { onConflict: 'user_id, date' });
-                        }
-
+                        prospects = data.prospects;
+                        availability = data.availability;
                         lastSyncTimestamp = data.timestamp;
-                        await startApp(user); // Reload data from Supabase
+                        saveAllData();
                         alert(translations[currentLang].importSuccess);
                     }
                 } else {
@@ -1749,7 +1483,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (error) {
                 alert(translations[currentLang].importError);
-                console.error("Import error:", error);
             }
         };
         reader.readAsText(file);
@@ -1836,37 +1569,16 @@ document.addEventListener('DOMContentLoaded', () => {
         plannerModal.style.display = 'flex';
     }
 
-    // **UPDATED** Save Availability Button Listener
-    document.getElementById('save-availability-btn').addEventListener('click', async () => {
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        if (!user) return alert("You must be logged in to save availability.");
-
+    document.getElementById('save-availability-btn').addEventListener('click', () => {
         const dateKey = `${currentPlannerDate.getFullYear()}-${String(currentPlannerDate.getMonth() + 1).padStart(2, '0')}-${String(currentPlannerDate.getDate()).padStart(2, '0')}`;
         const availableSlots = Array.from(document.querySelectorAll('#planner-timeline-slots .time-slot.available')).map(slot => slot.dataset.time);
-
-        // Update local availability object
         if (availableSlots.length > 0) {
             availability[dateKey] = availableSlots;
         } else {
             delete availability[dateKey];
         }
-
-        // Upsert data to Supabase
-        const { error } = await supabaseClient
-            .from('availability')
-            .upsert({ 
-                user_id: user.id,
-                date: dateKey,
-                time_slots: availableSlots
-            }, { onConflict: 'user_id, date' });
-
-        if (error) {
-            console.error("Error saving availability:", error);
-            alert("Failed to save availability.");
-        } else {
-            renderAvailableSlotsSidebar();
-            plannerModal.style.display = 'none';
-        }
+        saveAllData();
+        plannerModal.style.display = 'none';
     });
     
     function getSlotFromTime(date) {
@@ -1949,210 +1661,102 @@ document.addEventListener('DOMContentLoaded', () => {
         modalListContainer.innerHTML = contentHTML;
     }
 
-    // =======================================================
-    // START: AUTH & APP INITIALIZATION LOGIC
-    // =======================================================
-
-    const authContainer = document.getElementById('auth-container');
-    const appLayout = document.querySelector('.app-layout');
-    const logoutBtn = document.getElementById('logout-btn');
-    const loginView = document.getElementById('login-view');
-    const signupView = document.getElementById('signup-view');
-
-    async function handleLogin() {
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
-        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (error) alert(error.message);
-        else checkUserSession();
-    }
-
-    async function handleSignup() {
-        const email = document.getElementById('signup-email').value;
-        const password = document.getElementById('signup-password').value;
-        const { error } = await supabaseClient.auth.signUp({ email, password });
-        if (error) {
-            alert(error.message);
-        } else {
-            alert('Signup successful! Please check your email for a verification link.');
-            showLoginView();
+    function setupNotifications() {
+        // 1. Check if the browser supports notifications
+        if (!("Notification" in window)) {
+            console.log("This browser does not support desktop notification");
+            return;
         }
-    }
-    
-    async function handleLogout() {
-        await supabaseClient.auth.signOut();
-        prospects = [];
-        availability = {};
-        renderAll();
-        appLayout.style.display = 'none';
-        authContainer.style.display = 'flex';
-    }
 
-    async function handlePasswordReset() {
-        const email = prompt("Please enter your email to receive a password reset link:");
-        if (!email) return;
-
-        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-            redirectTo: window.location.href,
+        // 2. Request permission from the user
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                console.log("Notification permission granted.");
+                // 3. If granted, start checking for appointments every minute
+                setInterval(checkForUpcomingAppointments, 60000); // 60000ms = 1 minute
+            }
         });
-
-        if (error) {
-            alert("Error: " + error.message);
-        } else {
-            alert("Password reset link sent! Please check your email.");
-        }
     }
 
-    function showLoginView() {
-        loginView.style.display = 'block';
-        signupView.style.display = 'none';
-    }
+    function checkForUpcomingAppointments() {
+        const now = new Date();
+        const fifteenMinutesFromNow = new Date(now.getTime() + 15 * 60000);
+        const t = translations[currentLang];
 
-    function showSignupView() {
-        loginView.style.display = 'none';
-        signupView.style.display = 'block';
-    }
+        prospects.forEach(p => {
+            let appointmentTime = null;
+            let appointmentType = '';
 
-    async function subscribeUserToPush() {
-        try {
-            const response = await fetch('/.netlify/functions/get-vapid-key');
-            if (!response.ok) {
-                throw new Error('Failed to get VAPID key.');
+            if (p.status === 'STP' && p.stpTime) {
+                appointmentTime = new Date(p.stpTime);
+                appointmentType = 'STP';
+            } else if (p.status === 'GMS_Appointment' && p.gmsTime) {
+                appointmentTime = new Date(p.gmsTime);
+                appointmentType = 'GMS';
             }
-            const { publicKey } = await response.json();
 
-            await Notification.requestPermission();
-            const registration = await navigator.serviceWorker.ready;
-            const subscription = await registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: publicKey
-            });
-            
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if (user) {
-                await supabaseClient.from('subscriptions').upsert({
-                    user_id: user.id,
-                    subscription_data: subscription
-                }, { onConflict: 'user_id' });
+            // Check if there is an appointment within the next 15 minutes but not in the past
+            if (appointmentTime && appointmentTime > now && appointmentTime <= fifteenMinutesFromNow) {
+                
+                // IMPORTANT: Prevent sending the same notification over and over
+                const notificationKey = `notif_sent_${p.id}`;
+                if (sessionStorage.getItem(notificationKey) === 'true') {
+                    return; // Skip if we've already notified for this appointment
+                }
 
-                console.log('User successfully subscribed to push notifications.');
+                // Create the notification
+                const title = t.upcomingAppointmentsTitle;
+                const options = {
+                    body: `${p.name} - ${appointmentType} @ ${appointmentTime.toLocaleTimeString(currentLang === 'zh-CN' ? 'zh-CN' : 'en-US', { hour: '2-digit', minute: '2-digit' })}`,
+                    icon: 'https://img.icons8.com/color/48/000000/amethyst.png' // A simple diamond icon
+                };
+
+                new Notification(title, options);
+
+                // Mark this notification as sent in session storage
+                sessionStorage.setItem(notificationKey, 'true');
             }
-        } catch (error) {
-            console.error('Failed to subscribe user:', error);
-        }
+        });
     }
 
-    async function startApp(user) {
-        const startTime = Date.now();
-        authContainer.style.display = 'none';
-        appLayout.style.display = 'flex';
-        const logoutButton = document.querySelector('#logout-btn');
-        if(logoutButton) logoutButton.style.display = 'block';
+    // =======================================================
+    // START: APP INITIALIZATION LOGIC
+    // =======================================================
+    function startApp() {
+        // 1. Set all the text content FIRST to ensure elements are ready
+        setLanguage('zh-CN');
 
-        if (user && user.email) {
-            document.getElementById('user-email-sidebar').textContent = user.email;
-            document.getElementById('user-email-settings').textContent = user.email;
-            document.getElementById('user-info-sidebar').style.display = 'block';
-        }
-
-        // Fetch prospects
-        const { data: prospectsData, error: prospectsError } = await supabaseClient.from('prospects').select('*');
-        if (prospectsError) {
-            console.error("Error loading prospects:", prospectsError);
-        } else {
-            prospects = prospectsData || [];
-        }
-
-        // **NEW**: Fetch availability
-        const { data: availabilityData, error: availabilityError } = await supabaseClient.from('availability').select('date, time_slots');
-        if (availabilityError) {
-            console.error("Error loading availability:", availabilityError);
-        } else {
-            availability = {}; // Reset local availability
-            if (availabilityData) {
-                availabilityData.forEach(row => {
-                    availability[row.date] = row.time_slots;
-                });
-            }
-        }
-
+        // 2. Safely initialize date pickers
         try {
             const now = new Date();
             analyticsPicker.setDate(now, true);
         } catch (error) {
-            console.error("Failed to initialize analytics picker:", error);
+            console.error("Failed to initialize analytics picker, but continuing:", error);
         }
+
+        // 3. Now, render all data
         renderAll();
-        subscribeUserToPush();
 
-        // UI/UX Improvement: Ensure loading screen stays for at least 2 seconds
-        const elapsedTime = Date.now() - startTime;
-        const remainingTime = 2000 - elapsedTime;
+        // 4. Finally, set up background tasks
+        setupNotifications();
+    }
 
+    // This logic handles the loading screen and then starts the app
+    if (!sessionStorage.getItem('welcomeShown')) {
         setTimeout(() => {
             document.getElementById('loading-screen').classList.add('hidden');
-        }, remainingTime > 0 ? remainingTime : 0);
+            startApp(); // Run the startup sequence
+        }, 2000);
+        sessionStorage.setItem('welcomeShown', 'true');
+    } else {
+        document.getElementById('loading-screen').style.display = 'none';
+        startApp(); // Run the startup sequence
     }
-    
-    async function checkUserSession() {
-        setLanguage('zh-CN');
-        const { data: { session } } = await supabaseClient.auth.getSession();
-
-        if (session) {
-            // If the user is logged in, start the app.
-            // The startApp function already contains the logic for the 2-second minimum display.
-            startApp(session.user);
-        } else {
-            // If the user is NOT logged in, wait for 2 seconds before hiding the loading screen
-            // and showing the login form. This is the corrected logic.
-            setTimeout(() => {
-                document.getElementById('loading-screen').classList.add('hidden');
-                appLayout.style.display = 'none';
-                authContainer.style.display = 'flex';
-                showLoginView();
-            }, 2000);
-        }
-    }
-
-    // --- Event Listeners ---
-    document.getElementById('login-btn').addEventListener('click', handleLogin);
-    document.getElementById('signup-btn').addEventListener('click', handleSignup);
-    document.getElementById('show-signup-link').addEventListener('click', (e) => { e.preventDefault(); showSignupView(); });
-    document.getElementById('show-login-link').addEventListener('click', (e) => { e.preventDefault(); showLoginView(); });
-    document.getElementById('forgot-password-link').addEventListener('click', (e) => { e.preventDefault(); handlePasswordReset(); });
-    const logoutButton = document.querySelector('#logout-btn');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', handleLogout);
-    }
-    
-    supabaseClient.auth.onAuthStateChange(async (event, session) => {
-        if (event === 'PASSWORD_RECOVERY') {
-            const newPassword = prompt("Please enter your new password:");
-            if (newPassword) {
-                const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
-                if (error) alert("Error updating password: " + error.message);
-                else alert("Password updated successfully!");
-            }
-        }
-    });
-
-    checkUserSession(); // This is the new starting point for your app
 
     // =======================================================
-    // END: AUTH & APP INITIALIZATION LOGIC
+    // END: APP INITIALIZATION LOGIC
     // =======================================================
 });
 </script>
-
-<script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/service-worker.js')
-                .then(reg => console.log('Service worker registered.', reg))
-                .catch(err => console.log('Service worker registration failed:', err));
-        });
-    }
-</script>
-
 </body>
 </html>
