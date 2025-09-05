@@ -11,26 +11,26 @@
 
     <style>
         :root {
-            --primary-color: #0d47a1; 
-            --secondary-color: #f1f5f9; 
-            --accent-color: #10b981; 
+            --primary-color: #0d47a1;
+            --secondary-color: #f1f5f9;
+            --accent-color: #10b981;
             --danger-color: #ef4444;
-            --warning-color: #f59e0b; 
-            --info-color: #3b82f6; 
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
             --text-color: #1e2023; /* Darker, more readable main text */
             --light-text-color: #fff;
             --text-color-light: #2d3032; /* Softer, clearer secondary text */
-            --border-radius: 12px; 
+            --border-radius: 12px;
             --box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             --card-bg: rgba(255, 255, 255, 0.95);
             --border-color: #e2e8f0;
         }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            margin: 0; 
-            padding: 20px; 
-            background-color: var(--secondary-color); 
-            color: var(--text-color); 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
             line-height: 1.6;
             background-image: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
         }
@@ -93,14 +93,14 @@
             background: linear-gradient(45deg, var(--primary-color), var(--info-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin: 0; 
-            font-size: 1.8em; 
+            margin: 0;
+            font-size: 1.8em;
         }
         .controls, .filter-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
         button, .btn-file-input { padding: 10px 20px; font-size: 1em; font-weight: 600; border: none; border-radius: var(--border-radius); cursor: pointer; transition: all 0.2s ease; display: inline-block; text-align: center;}
         button:active { transform: scale(0.97); }
         .btn-primary { background-color: var(--primary-color); color: var(--light-text-color); } .btn-primary:hover { background-color: #0b3a8a; box-shadow: 0 4px 10px rgba(13, 71, 161, 0.3); }
-        .btn-success { background: linear-gradient(45deg, var(--primary-color), var(--info-color)); color: var(--light-text-color); background-size: 200% auto; } 
+        .btn-success { background: linear-gradient(45deg, var(--primary-color), var(--info-color)); color: var(--light-text-color); background-size: 200% auto; }
         .btn-success:hover { background-position: right center; box-shadow: 0 4px 12px rgba(60, 130, 246, 0.4); }
         .btn-danger { background-color: var(--danger-color); color: var(--light-text-color); } .btn-danger:hover { background-color: #d93333; }
         .btn-secondary { background-color: #64748b; color: var(--light-text-color); } .btn-secondary:hover { background-color: #475569; }
@@ -184,13 +184,58 @@
         #guide .legend-item { display: inline-flex; margin-right: 15px; }
         #guide code { background-color: var(--secondary-color); padding: 2px 6px; border-radius: 4px; font-family: "Courier New", Courier, monospace; }
         #show-availability-fab { display: none; position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background-color: var(--primary-color); color: white; font-size: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 2px solid white; align-items: center; justify-content: center; z-index: 1001; }
-        .pagination { display: flex; justify-content: center; align-items: center; gap: 5px; margin-top: 25px; }
-        .page-btn { background-color: #fff; border: 1px solid var(--border-color); color: var(--primary-color); font-weight: 600; padding: 8px 14px; border-radius: 8px; }
-        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .page-btn.active { background-color: var(--primary-color); color: var(--light-text-color); border-color: var(--primary-color); }
-        .page-btn:not(:disabled):hover { background-color: var(--secondary-color); }
         .dashboard-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         
+        /* ===== START: PAGINATION STYLES ===== */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin-top: 25px;
+        }
+        .page-btn {
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            color: var(--primary-color);
+            font-weight: 600;
+            padding: 8px 14px;
+            border-radius: 8px;
+        }
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .page-btn.active {
+            background-color: var(--primary-color);
+            color: var(--light-text-color);
+            border-color: var(--primary-color);
+        }
+        .page-btn:not(:disabled):hover {
+            background-color: var(--secondary-color);
+        }
+        /* ===== END: PAGINATION STYLES ===== */
+
+        /* ===== START: CUSTOM CONFIRMATION MODAL ===== */
+        #confirm-modal .modal-content {
+            max-width: 400px;
+            text-align: center;
+        }
+        #confirm-modal-text {
+            margin-bottom: 25px;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+        #confirm-modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        #confirm-modal-buttons button {
+            flex: 1;
+        }
+        /* ===== END: CUSTOM CONFIRMATION MODAL ===== */
+
         /* ===== Flatpickr Custom Theme ===== */
         .flatpickr-calendar { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--box-shadow); width: 315px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         .flatpickr-months .flatpickr-month { color: var(--primary-color); font-weight: 600; font-size: 1rem; height: 40px; }
@@ -216,148 +261,36 @@
         .flatpickr-monthSelect-month:hover { background-color: var(--secondary-color); color: var(--primary-color); }
         .flatpickr-monthSelect-month.selected { background-color: var(--primary-color); color: var(--light-text-color); }
 
-        /* ======================================================= */
-        /* START: HOVER EFFECT ENHANCEMENTS                      */
-        /* ======================================================= */
-
-        /* 1. Add a subtle 'lift' effect to Dashboard cards */
-        .reminder-card, .appointment-card {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        }
-
-        .reminder-card:hover, .appointment-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(30, 41, 59, 0.1);
-        }
-
-        /* 2. Enhance the main navigation tabs on hover */
-        .tab-button:hover {
-            transform: translateY(-2px);
-            background-color: rgba(0,0,0,0.02);
-        }
-
-        /* 3. Make calendar days pop out when hovered */
-        .calendar-day {
-            /* Add transform and box-shadow to the existing transition */
-            transition: background-color 0.2s, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        }
-
-        .calendar-day:not(.other-month):hover {
-            transform: translateY(-3px);
-            box-shadow: var(--box-shadow);
-            cursor: pointer;
-        }
-
-        /* ======================================================= */
-        /* END: HOVER EFFECT ENHANCEMENTS                        */
-        /* ======================================================= */
-
-        /* ======================================================= */
-        /* START: AUTHENTICATION STYLES                          */
-        /* ======================================================= */
-        #auth-container {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: var(--secondary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            padding: 20px;
-        }
-        .auth-card {
-            background: var(--card-bg);
-            padding: 30px 25px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            width: 100%;
-            max-width: 400px;
-            border-top: 5px solid var(--primary-color);
-        }
-        .auth-card h2 {
-            color: var(--primary-color);
-            text-align: center;
-            margin-top: 0;
-            margin-bottom: 25px;
-        }
-        .auth-card button {
-            width: 100%;
-            margin-top: 10px;
-        }
-        .auth-toggle-text {
-            font-size: 0.9em;
-            text-align: center;
-            margin-top: 20px;
-            color: var(--text-color-light);
-        }
-        .auth-toggle-text a {
-            color: var(--primary-color);
-            font-weight: 600;
-            text-decoration: none;
-        }
-        .auth-toggle-text a:hover {
-            text-decoration: underline;
-        }
-        .forgot-password {
-            display: block;
-            text-align: center;
-            font-size: 0.85em;
-            margin-top: 15px;
-            color: var(--text-color-light);
-        }
-        .user-info-widget {
-            background-color: var(--secondary-color);
-            padding: 10px 15px;
-            border-radius: var(--border-radius);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .user-info-widget p {
-            margin: 0;
-            font-size: 0.9em;
-        }
-        .user-info-widget span {
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-        /* ======================================================= */
-        /* END: AUTHENTICATION STYLES                            */
-        /* ======================================================= */
-
-        /* ======================================================= */
-        /* START: BUTTON & SETTINGS UI ENHANCEMENTS              */
-        /* ======================================================= */
-
-        /* Add space for icons in buttons */
-        button[data-icon]:before {
-            content: attr(data-icon);
-            margin-right: 8px;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        /* Style the buttons in the Danger Zone card */
-        .settings-card .controls {
-            display: flex;
-            flex-wrap: wrap; /* Allows buttons to wrap nicely if needed */
-            gap: 10px;
-        }
-
-        /* Specific style for the Logout button */
-        #logout-btn {
-            background-color: #6c757d; /* Use the secondary gray */
-        }
-        #logout-btn:hover {
-            background-color: #5a6268;
-        }
-
-        /* ======================================================= */
-        /* END: BUTTON & SETTINGS UI ENHANCEMENTS                */
-        /* ======================================================= */
+        /* HOVER EFFECT ENHANCEMENTS */
+        .reminder-card, .appointment-card { transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+        .reminder-card:hover, .appointment-card:hover { transform: translateY(-3px); box-shadow: 0 8px 16px rgba(30, 41, 59, 0.1); }
+        .tab-button:hover { transform: translateY(-2px); background-color: rgba(0,0,0,0.02); }
+        .calendar-day { transition: background-color 0.2s, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+        .calendar-day:not(.other-month):hover { transform: translateY(-3px); box-shadow: var(--box-shadow); cursor: pointer; }
+        
+        /* AUTHENTICATION STYLES */
+        #auth-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--secondary-color); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
+        .auth-card { background: var(--card-bg); padding: 30px 25px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); width: 100%; max-width: 400px; border-top: 5px solid var(--primary-color); }
+        .auth-card h2 { color: var(--primary-color); text-align: center; margin-top: 0; margin-bottom: 25px; }
+        .auth-card button { width: 100%; margin-top: 10px; }
+        .auth-toggle-text { font-size: 0.9em; text-align: center; margin-top: 20px; color: var(--text-color-light); }
+        .auth-toggle-text a { color: var(--primary-color); font-weight: 600; text-decoration: none; }
+        .auth-toggle-text a:hover { text-decoration: underline; }
+        .forgot-password { display: block; text-align: center; font-size: 0.85em; margin-top: 15px; color: var(--text-color-light); }
+        .user-info-widget { background-color: var(--secondary-color); padding: 10px 15px; border-radius: var(--border-radius); margin-bottom: 20px; text-align: center; }
+        .user-info-widget p { margin: 0; font-size: 0.9em; }
+        .user-info-widget span { font-weight: 600; color: var(--primary-color); }
+        
+        /* BUTTON & SETTINGS UI ENHANCEMENTS */
+        button[data-icon]:before { content: attr(data-icon); margin-right: 8px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .settings-card .controls { display: flex; flex-wrap: wrap; gap: 10px; }
+        #logout-btn { background-color: #6c757d; }
+        #logout-btn:hover { background-color: #5a6268; }
 
         /* Tablet Responsive Styles */
-        @media (max-width: 992px) { 
+        @media (max-width: 992px) {
             body { padding: 15px; }
-            .app-layout { flex-direction: column; } 
+            .app-layout { flex-direction: column; }
             .sidebar { display: none; }
             #show-availability-fab { display: flex; }
         }
@@ -373,92 +306,35 @@
             .tab-button { flex-grow: 0; flex-shrink: 0; }
             .prospect-meta { flex-direction: column; gap: 5px; align-items: flex-start; }
             .prospect-meta .separator { display: none; }
-
-            /* ADD THIS NEW BLOCK FOR THE FIX */
-            .dashboard-header {
-                flex-direction: column;      /* Stack title and buttons vertically */
-                align-items: flex-start;   /* Align them to the left */
-                gap: 15px;                   /* Add space between the title and buttons */
-                margin-bottom: 20px;         /* Add space below the header to prevent overlap */
-            }
-
-            /* ADD THIS FOR A MORE PROFESSIONAL BUTTON LAYOUT */
-            .dashboard-header .controls {
-                display: grid;               /* Use grid for easy columns */
-                grid-template-columns: 1fr 1fr; /* Create a two-column layout for the buttons */
-                width: 100%;                 /* Make the container take full width */
-            }
-
-            /* 1. Refines the Filter Controls */
-            .filter-controls {
-                display: grid;
-                grid-template-columns: 1fr 1fr; /* Two equal columns */
-                gap: 10px;
-            }
-
-            .filter-controls .search-bar {
-                grid-column: 1 / -1; /* Make search bar span both columns */
-            }
-
-            /* 2. Refines the Prospect Card Header (Name and Status Badge) */
-            .prospect-card .card-header h3 {
-                display: flex;
-                flex-wrap: wrap;
-                align-items: center;
-                gap: 8px; /* Adds space between name and badge */
-                line-height: 1.4;
-            }
-
-            /* 3. Refines the Action Buttons inside the card */
-            .prospect-actions {
-                display: grid;
-                /* This creates a smart, auto-fitting grid for the buttons */
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            }
+            .dashboard-header { flex-direction: column; align-items: flex-start; gap: 15px; margin-bottom: 20px; }
+            .dashboard-header .controls { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+            .filter-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+            .filter-controls .search-bar { grid-column: 1 / -1; }
+            .prospect-card .card-header h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; line-height: 1.4; }
+            .prospect-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
         }
     </style>
 </head>
 <body>
-    <!-- ======================================================= -->
-    <!-- START: AUTHENTICATION UI                                -->
-    <!-- ======================================================= -->
     <div id="auth-container" style="display: none;">
         <div class="auth-card">
-            <!-- Login Form -->
             <div id="login-view">
                 <h2 id="auth-title-login"></h2>
-                <div class="form-group">
-                    <label for="login-email" id="auth-email-label-login"></label>
-                    <input type="email" id="login-email" autocomplete="email">
-                </div>
-                <div class="form-group">
-                    <label for="login-password" id="auth-password-label-login"></label>
-                    <input type="password" id="login-password" autocomplete="current-password">
-                </div>
+                <div class="form-group"> <label for="login-email" id="auth-email-label-login"></label> <input type="email" id="login-email" autocomplete="email"> </div>
+                <div class="form-group"> <label for="login-password" id="auth-password-label-login"></label> <input type="password" id="login-password" autocomplete="current-password"> </div>
                 <button id="login-btn" class="btn-primary"></button>
                 <p class="auth-toggle-text"><span id="auth-no-account"></span> <a href="#" id="show-signup-link"></a></p>
                 <a href="#" id="forgot-password-link" class="forgot-password"></a>
             </div>
-
-            <!-- Signup Form -->
             <div id="signup-view" style="display: none;">
                 <h2 id="auth-title-signup"></h2>
-                <div class="form-group">
-                    <label for="signup-email" id="auth-email-label-signup"></label>
-                    <input type="email" id="signup-email" autocomplete="email">
-                </div>
-                <div class="form-group">
-                    <label for="signup-password" id="auth-password-label-signup"></label>
-                    <input type="password" id="signup-password" autocomplete="new-password">
-                </div>
+                <div class="form-group"> <label for="signup-email" id="auth-email-label-signup"></label> <input type="email" id="signup-email" autocomplete="email"> </div>
+                <div class="form-group"> <label for="signup-password" id="auth-password-label-signup"></label> <input type="password" id="signup-password" autocomplete="new-password"> </div>
                 <button id="signup-btn" class="btn-primary"></button>
                 <p class="auth-toggle-text"><span id="auth-have-account"></span> <a href="#" id="show-login-link"></a></p>
             </div>
         </div>
     </div>
-    <!-- ======================================================= -->
-    <!-- END: AUTHENTICATION UI                                  -->
-    <!-- ======================================================= -->
 
     <div id="loading-screen">
         <div class="welcome-message">
@@ -466,7 +342,7 @@
         </div>
     </div>
 
-    <div class="app-layout">
+    <div class="app-layout" style="display: none;">
         <div class="main-content">
             <div class="container">
                 <header>
@@ -490,7 +366,7 @@
                         </div>
                     </div>
                     <div id="appointments-grid" class="reminders-grid"></div>
-                    <h2 id="followUpTitle" style="margin-top: 30px;"></h2> 
+                    <h2 id="followUpTitle" style="margin-top: 30px;"></h2>
                     <div id="follow-ups-grid" class="reminders-grid"></div>
                 </div>
                 <div id="calendar" class="tab-content">
@@ -531,18 +407,14 @@
                     </div>
                 </div>
                 <div id="settings" class="tab-content">
-                    <h2 id="settingsTitle"></h2> 
+                    <h2 id="settingsTitle"></h2>
 
                     <div class="settings-card" style="border-left-color: #6c757d;">
                         <h3 id="account-info-title"></h3>
-                        <p>
-                            <strong id="logged-in-as-label"></strong> 
-                            <span id="user-email-settings"></span>
-                        </p>
+                        <p><strong id="logged-in-as-label"></strong> <span id="user-email-settings"></span></p>
                     </div>
                     <div class="settings-card" style="border-left-color: var(--primary-color);">
-                        <h3 id="backupSyncTitle"></h3>
-                        <p id="backupSyncDesc"></p>
+                        <h3 id="backupSyncTitle"></h3> <p id="backupSyncDesc"></p>
                         <div class="controls">
                             <button id="exportData" class="btn-primary"></button>
                             <label class="btn-secondary btn-file-input">
@@ -556,104 +428,45 @@
                         <p><strong>Total Prospects:</strong> <span id="total-prospects">0</span></p>
                     </div>
                     <div class="settings-card" style="border-left-color: var(--danger-color); margin-top: 20px;">
-                         <h3 id="dangerZoneTitle"></h3>
-                         <p id="dangerZoneDesc"></p>
+                         <h3 id="dangerZoneTitle"></h3> <p id="dangerZoneDesc"></p>
                          <button id="clearData" class="btn-danger"></button>
                     </div>
                     <div class="settings-card" style="border-left-color: var(--secondary-color); margin-top: 20px;">
-                        <h3 id="logout-title"></h3>
-                        <p id="logout-desc"></p>
-                        <div class="controls">
-                            <button id="logout-btn" class="btn-secondary" style="display: none;"></button>
-                        </div>
+                        <h3 id="logout-title"></h3> <p id="logout-desc"></p>
+                        <div class="controls"> <button id="logout-btn" class="btn-secondary" style="display: none;"></button> </div>
                     </div>
                 </div>
                  <div id="guide" class="tab-content">
-                    <h2 id="guide-main-title"></h2>
-                    <hr>
-                    <h3 id="guide-getting-started-title"></h3>
-                    <p id="guide-getting-started-p1"></p>
-                    <p><strong><span id="guide-getting-started-p2"></span></strong></p>
-                    <ul>
-                        <li id="guide-getting-started-li1"></li>
-                        <li id="guide-getting-started-li2"></li>
-                        <li id="guide-getting-started-li3"></li>
-                    </ul>
-
-                    <h3 id="guide-interface-title"></h3>
-                    <p id="guide-interface-p1"></p>
-                    <ul>
-                        <li id="guide-interface-li1"></li>
-                        <li id="guide-interface-li2"></li>
-                        <li id="guide-interface-li3"></li>
-                    </ul>
-                    
-                    <h3 id="guide-dashboard-title"></h3>
-                    <p id="guide-dashboard-p1"></p>
-                    <ul>
-                        <li id="guide-dashboard-li1"></li>
-                        <li id="guide-dashboard-li2"></li>
-                        <li id="guide-dashboard-li3"></li>
-                    </ul>
-
-                    <h3 id="guide-calendar-title"></h3>
-                    <p id="guide-calendar-p1"></p>
+                    <h2 id="guide-main-title"></h2> <hr>
+                    <h3 id="guide-getting-started-title"></h3> <p id="guide-getting-started-p1"></p> <p><strong><span id="guide-getting-started-p2"></span></strong></p>
+                    <ul> <li id="guide-getting-started-li1"></li> <li id="guide-getting-started-li2"></li> <li id="guide-getting-started-li3"></li> </ul>
+                    <h3 id="guide-interface-title"></h3> <p id="guide-interface-p1"></p>
+                    <ul> <li id="guide-interface-li1"></li> <li id="guide-interface-li2"></li> <li id="guide-interface-li3"></li> </ul>
+                    <h3 id="guide-dashboard-title"></h3> <p id="guide-dashboard-p1"></p>
+                    <ul> <li id="guide-dashboard-li1"></li> <li id="guide-dashboard-li2"></li> <li id="guide-dashboard-li3"></li> </ul>
+                    <h3 id="guide-calendar-title"></h3> <p id="guide-calendar-p1"></p>
                     <div class="planner-legend" style="justify-content: flex-start; margin-left: 20px;">
                         <span class="legend-item"><span class="appointment-dot dot-stp"></span><span id="legend-stp-guide"></span></span>
                         <span class="legend-item"><span class="appointment-dot dot-gms"></span><span id="legend-gms-guide"></span></span>
                     </div>
                     <p id="guide-calendar-p2"></p>
-                    <ul>
-                        <li id="guide-calendar-li1"></li>
-                        <li id="guide-calendar-li2"></li>
-                        <li id="guide-calendar-li3"></li>
-                    </ul>
-
-                    <h3 id="guide-prospects-title"></h3>
-                    <p><strong><span id="guide-prospects-p1"></span></strong></p>
-                    <ul>
-                        <li id="guide-prospects-li1"></li>
-                        <li id="guide-prospects-li2"></li>
-                        <li id="guide-prospects-li3"></li>
-                    </ul>
+                    <ul> <li id="guide-calendar-li1"></li> <li id="guide-calendar-li2"></li> <li id="guide-calendar-li3"></li> </ul>
+                    <h3 id="guide-prospects-title"></h3> <p><strong><span id="guide-prospects-p1"></span></strong></p>
+                    <ul> <li id="guide-prospects-li1"></li> <li id="guide-prospects-li2"></li> <li id="guide-prospects-li3"></li> </ul>
                     <p><strong><span id="guide-prospects-p2"></span></strong></p>
-                    <ul>
-                        <li id="guide-prospects-li4"></li>
-                        <li id="guide-prospects-li5"></li>
-                    </ul>
-                    <p><strong><span id="guide-prospects-p3"></span></strong></p>
-
-                    <h3 id="guide-analytics-title"></h3>
-                    <p id="guide-analytics-p1"></p>
-                    <ul>
-                        <li id="guide-analytics-li1"></li>
-                    </ul>
-                    <p><strong><span id="guide-analytics-p2"></span></strong></p>
-                    <ul>
-                        <li id="guide-analytics-li2"></li>
-                        <li id="guide-analytics-li3"></li>
-                    </ul>
-                    <p><strong><span id="guide-analytics-p3"></span></strong></p>
-                    
-                    <h3 id="guide-settings-title"></h3>
-                    <p id="guide-settings-p1"></p>
-                    <ul>
-                        <li id="guide-settings-li1"></li>
-                    </ul>
-                    <p><strong><span id="guide-settings-p2"></span></strong></p>
-                    <p><strong><span id="guide-settings-p3"></span></strong></p>
-                    <ul>
-                        <li id="guide-settings-li2"></li>
-                    </ul>
+                    <ul> <li id="guide-prospects-li4"></li> <li id="guide-prospects-li5"></li> </ul> <p><strong><span id="guide-prospects-p3"></span></strong></p>
+                    <h3 id="guide-analytics-title"></h3> <p id="guide-analytics-p1"></p>
+                    <ul> <li id="guide-analytics-li1"></li> </ul> <p><strong><span id="guide-analytics-p2"></span></strong></p>
+                    <ul> <li id="guide-analytics-li2"></li> <li id="guide-analytics-li3"></li> </ul> <p><strong><span id="guide-analytics-p3"></span></strong></p>
+                    <h3 id="guide-settings-title"></h3> <p id="guide-settings-p1"></p>
+                    <ul> <li id="guide-settings-li1"></li> </ul> <p><strong><span id="guide-settings-p2"></span></strong></p> <p><strong><span id="guide-settings-p3"></span></strong></p>
+                    <ul> <li id="guide-settings-li2"></li> </ul>
                 </div>
             </div>
         </div>
         <div class="sidebar">
             <div id="user-info-sidebar" class="user-info-widget" style="display: none;">
-                <p>
-                    <strong id="user-info-label"></strong>
-                    <span id="user-email-sidebar"></span>
-                </p>
+                <p> <strong id="user-info-label"></strong> <span id="user-email-sidebar"></span> </p>
             </div>
             <h3 id="sidebar-title"></h3>
             <div id="available-slots-list"></div>
@@ -665,18 +478,8 @@
             <div class="modal-header"> <h2 id="modal-title"></h2> <span class="close-button" id="close-modal">&times;</span> </div>
             <form id="prospect-form">
                 <input type="hidden" id="prospect-id">
-                <div class="form-group">
-                    <label id="owner-type-label"></label>
-                    <select id="owner-type">
-                        <option value="user" id="owner-user-option"></option>
-                        <option value="downline" id="owner-downline-option"></option>
-                    </select>
-                </div>
-                <div class="form-group" id="downline-name-group" style="display: none;">
-                    <label for="downline-name" id="downline-name-label"></label>
-                    <input type="text" id="downline-name" list="downline-names-list">
-                    <datalist id="downline-names-list"></datalist>
-                </div>
+                <div class="form-group"> <label id="owner-type-label"></label> <select id="owner-type"> <option value="user" id="owner-user-option"></option> <option value="downline" id="owner-downline-option"></option> </select> </div>
+                <div class="form-group" id="downline-name-group" style="display: none;"> <label for="downline-name" id="downline-name-label"></label> <input type="text" id="downline-name" list="downline-names-list"> <datalist id="downline-names-list"></datalist> </div>
                 <div class="form-group"> <label for="name" id="labelName"></label> <input type="text" id="name" required> </div>
                 <div class="form-group"> <label for="phone" id="labelPhone"></label> <input type="text" id="phone"> </div>
                 <div class="form-group"> <label for="age" id="labelAge"></label> <input type="number" id="age"> </div>
@@ -703,10 +506,7 @@
         <div class="modal-content">
             <div class="modal-header"> <h2 id="planner-title"></h2> <span class="close-button" id="close-planner-modal">&times;</span> </div>
             <div class="planner-container">
-                <div class="planner-appointments">
-                    <h3 id="planner-appointments-title"></h3>
-                    <ul id="planner-appointments-list"></ul>
-                </div>
+                <div class="planner-appointments"> <h3 id="planner-appointments-title"></h3> <ul id="planner-appointments-list"></ul> </div>
                 <div class="planner-timeline">
                     <h3 id="planner-timeline-title"></h3>
                     <div class="planner-legend">
@@ -717,18 +517,26 @@
                     <div id="planner-timeline-slots"></div>
                 </div>
             </div>
-            <div class="planner-footer">
-                <button class="btn-primary" id="save-availability-btn"></button>
-            </div>
+            <div class="planner-footer"> <button class="btn-primary" id="save-availability-btn"></button> </div>
         </div>
     </div>
     <div id="availability-modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header"> 
-                <h2 id="availability-modal-title"></h2> 
-                <span class="close-button" id="close-availability-modal">&times;</span> 
-            </div>
+            <div class="modal-header"> <h2 id="availability-modal-title"></h2> <span class="close-button" id="close-availability-modal">&times;</span> </div>
             <div id="modal-slots-list"></div>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="confirm-modal-title"></h2>
+            </div>
+            <p id="confirm-modal-text"></p>
+            <div id="confirm-modal-buttons">
+                <button id="confirm-modal-cancel-btn" class="btn-secondary"></button>
+                <button id="confirm-modal-ok-btn" class="btn-danger"></button>
+            </div>
         </div>
     </div>
 
@@ -739,20 +547,20 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // --- START: SUPABASE SETUP ---
-    const SUPABASE_URL = 'https://lgzjsgvsdcodepjsfjcx.supabase.co'; // Your URL
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnempzZ3ZzZGNvZGVwanNmamN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3Nzk0NjMsImV4cCI6MjA3MjM1NTQ2M30.Cwq1dL8DjTYYCbaNh6ELX3lubEiJIITWbjhRMYRmj_0';   // Paste the key you just copied
+    const SUPABASE_URL = 'https://lgzjsgvsdcodepjsfjcx.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnempzZ3ZzZGNvZGVwanNmamN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3Nzk0NjMsImV4cCI6MjA3MjM1NTQ2M30.Cwq1dL8DjTYYCbaNh6ELX3lubEiJIITWbjhRMYRmj_0';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    // --- END: SUPABASE SETUP ---
-
+    
     let currentPage = 1;
     const PROSPECTS_PER_PAGE = 8;
     let trendChartInstance = null;
     const translations = {
         'zh-CN': {
+            confirmActionTitle: "确认操作", confirmBtnOK: "确认", confirmBtnCancel: "取消",
+            timePeriods: { lingchen: "凌晨", zaoshang: "早上", zhongwu: "中午", xiawu: "下午", bangwan: "傍晚", wanshang: "晚上" },
             tabCalendar: "日历", appTitle: "安利对象跟进系统💎", addProspectBtn: "➕ 添加新对象", tabDashboard: "对象跟进中心", tabAllProspects: "所有对象列表", tabAnalytics: "数据分析", tabSettings: "设置", tabGuide: "指南",
             upcomingAppointmentsTitle: "未来预约 📅", followUpTitle: "需要跟进 📞", noAppointmentsText: "没有未来的预约。", noFollowUpsText: "目前没有需要跟进对象。", allProspectsTitle: "所有对象",
-            analyticsTitle: "月度数据分析", analyticsMonthLabel: "选择月份:", settingsTitle: "数据与设置", 
+            analyticsTitle: "月度数据分析", analyticsMonthLabel: "选择月份:", settingsTitle: "数据与设置",
             backupSyncTitle: "备份与同步", backupSyncDesc: "将您的所有数据（对象和可用时间）导出到一个文件中。您可以保存此文件作为备份，或在另一台设备上导入它以同步您的数据。",
             exportData: "导出数据", importDataLabel: "导入数据", importConfirm: "您确定要用此文件中的数据覆盖所有当前数据吗？此操作无法撤销。", importSuccess: "数据导入成功！", importError: "文件无效或已损坏。",
             dangerZoneTitle: "危险区域", dangerZoneDesc: "此操作将永久删除您的所有对象和可用时间数据。",
@@ -818,34 +626,19 @@ document.addEventListener('DOMContentLoaded', () => {
             guideSettingsP3: "<b>危险区域:</b>",
             guideSettingsLi1: "<b>备份与同步:</b> 这是确保您的数据安全并在不同设备间同步的最重要功能。<ul><li><b>导出数据:</b> 点击此按钮，将您所有的伙伴和可用时间数据下载到一个备份文件（.json）中。该文件将以当前日期和时间命名。</li><li><b>导入数据:</b> 在另一台设备上（或同一台设备上），点击此按钮并选择您之前导出的备份文件。确认操作后，当前数据将被覆盖，从而实现设备间的同步。</li></ul>",
             guideSettingsLi2: "<b>清除所有数据:</b> 请谨慎使用此功能！ 这将永久删除所有的伙伴记录和可用时间数据。此操作无法撤销。",
-            guidePeriodLingchen: "凌晨", guidePeriodZaoshang: "早上", guidePeriodZhongwu: "中午", guidePeriodXiawu: "下午", guidePeriodBangwan: "傍晚", guidePeriodWanshang: "晚上",
             analyticsTrendTitle: "6个月表现趋势",
             copyStpBtn: "复制STP列表", copyGmsBtn: "复制GMS列表", copied: "已复制!",
             welcome: "欢迎钻石们!",
-            'auth-title-login': "登录",
-            'auth-email-label-login': "邮箱地址",
-            'auth-password-label-login': "密码",
-            'login-btn': "登录",
-            'auth-no-account': "还没有账户？",
-            'show-signup-link': "立即注册",
-            'forgot-password-link': "忘记密码？",
-            'auth-title-signup': "创建账户",
-            'auth-email-label-signup': "邮箱地址",
-            'auth-password-label-signup': "密码",
-            'signup-btn': "注册",
-            'auth-have-account': "已经有账户了？",
-            'show-login-link': "立即登录",
-            'logout-btn': "登出",
-            'logout-title': "登出账户",
-            'logout-desc': "安全退出您的账户。您需要重新登录才能再次访问您的数据。",
-            'user-info-label': "当前用户:",
-            'account-info-title': "账户信息",
-            'logged-in-as-label': "登录身份:"
+            'auth-title-login': "登录", 'auth-email-label-login': "邮箱地址", 'auth-password-label-login': "密码", 'login-btn': "登录", 'auth-no-account': "还没有账户？",
+            'show-signup-link': "立即注册", 'forgot-password-link': "忘记密码？", 'auth-title-signup': "创建账户", 'auth-email-label-signup': "邮箱地址", 'auth-password-label-signup': "密码",
+            'signup-btn': "注册", 'auth-have-account': "已经有账户了？", 'show-login-link': "立即登录", 'logout-btn': "登出", 'logout-title': "登出账户",
+            'logout-desc': "安全退出您的账户。您需要重新登录才能再次访问您的数据。", 'user-info-label': "当前用户:", 'account-info-title': "账户信息", 'logged-in-as-label': "登录身份:"
         },
         'en': {
+            confirmActionTitle: "Confirm Action", confirmBtnOK: "Confirm", confirmBtnCancel: "Cancel",
             tabCalendar: "Calendar", appTitle: "Amway Prospect Tracker💎", addProspectBtn: "➕ Add New Prospect", tabDashboard: "Dashboard", tabAllProspects: "All Prospects", tabAnalytics: "Analytics", tabSettings: "Settings", tabGuide: "Guide",
             upcomingAppointmentsTitle: "Upcoming Appointments 📅", followUpTitle: "Follow-up Needed 📞", noAppointmentsText: "No upcoming appointments.", noFollowUpsText: "No prospects to follow up with right now.",
-            allProspectsTitle: "All Prospects", analyticsTitle: "Monthly Analytics", analyticsMonthLabel: "Select Month:", settingsTitle: "Data & Settings", 
+            allProspectsTitle: "All Prospects", analyticsTitle: "Monthly Analytics", analyticsMonthLabel: "Select Month:", settingsTitle: "Data & Settings",
             backupSyncTitle: "Backup & Sync", backupSyncDesc: "Export all your data (prospects and availability) to a single file. You can save this file as a backup or import it on another device to sync your data.",
             exportData: "Export Data", importDataLabel: "Import Data", importConfirm: "Are you sure you want to overwrite all current data with the data from this file? This action cannot be undone.", importSuccess: "Data imported successfully!", importError: "Invalid or corrupted file.",
             dangerZoneTitle: "Danger Zone", dangerZoneDesc: "This action will permanently delete all your prospect and availability data.",
@@ -917,39 +710,22 @@ document.addEventListener('DOMContentLoaded', () => {
             analyticsTrendTitle: "6-Month Performance Trend",
             copyStpBtn: "Copy STP List", copyGmsBtn: "Copy GMS List", copied: "Copied!",
             welcome: "Welcome Diamonds!",
-            'auth-title-login': "Login",
-            'auth-email-label-login': "Email Address",
-            'auth-password-label-login': "Password",
-            'login-btn': "Login",
-            'auth-no-account': "Don't have an account?",
-            'show-signup-link': "Sign up now",
-            'forgot-password-link': "Forgot password?",
-            'auth-title-signup': "Create an Account",
-            'auth-email-label-signup': "Email Address",
-            'auth-password-label-signup': "Password",
-            'signup-btn': "Sign Up",
-            'auth-have-account': "Already have an account?",
-            'show-login-link': "Log in",
-            'logout-btn': "Logout",
-            'logout-title': "Account Logout",
-            'logout-desc': "Securely sign out of your account. You will need to log in again to access your data.",
-            'user-info-label': "Current User:",
-            'account-info-title': "Account Information",
-            'logged-in-as-label': "Logged in as:"
+            'auth-title-login': "Login", 'auth-email-label-login': "Email Address", 'auth-password-label-login': "Password", 'login-btn': "Login", 'auth-no-account': "Don't have an account?",
+            'show-signup-link': "Sign up now", 'forgot-password-link': "Forgot password?", 'auth-title-signup': "Create an Account", 'auth-email-label-signup': "Email Address", 'auth-password-label-signup': "Password",
+            'signup-btn': "Sign Up", 'auth-have-account': "Already have an account?", 'show-login-link': "Log in", 'logout-btn': "Logout", 'logout-title': "Account Logout",
+            'logout-desc': "Securely sign out of your account. You will need to log in again to access your data.", 'user-info-label': "Current User:", 'account-info-title': "Account Information", 'logged-in-as-label': "Logged in as:"
         }
     };
     let currentLang = 'zh-CN';
     let calendarDate = new Date();
-    let prospectViewFilter = 'user'; 
-    let analyticsView = 'user'; 
+    let prospectViewFilter = 'user';
+    let analyticsView = 'user';
     let prospects = [];
     let availability = {};
     let lastSyncTimestamp = null;
-  
 
     function setLanguage(lang) {
         currentLang = lang; document.documentElement.lang = lang; const t = translations[lang];
-        // REPLACE your current 'elements' object with this complete one.
         const elements = {
             appTitle: t.appTitle, 'add-prospect-btn': t.addProspectBtn, 'lang-toggle': lang === 'zh-CN' ? 'English' : '中文', tabDashboard: t.tabDashboard, tabCalendar: t.tabCalendar,
             tabAllProspects: t.tabAllProspects, tabAnalytics: t.tabAnalytics, tabSettings: t.tabSettings, tabGuide: t.tabGuide,
@@ -965,123 +741,88 @@ document.addEventListener('DOMContentLoaded', () => {
             'sidebar-title': t.sidebarTitle, 'availability-modal-title': t.availabilityModalTitle,
             'owner-type-label': t.ownerTypeLabel, 'owner-user-option': t.ownerUserOption, 'owner-downline-option': t.ownerDownlineOption,
             'downline-name-label': t.downlineNameLabel, 'downline-filter-label': t.downlineFilterLabel,
-            'guide-main-title': t.guideMainTitle, 
-            'guide-getting-started-title': t.guideGettingStartedTitle, 
-            'guide-getting-started-p1': t.guideGettingStartedP1,
-            'guide-getting-started-p2': t.guideGettingStartedP2,
-            'guide-getting-started-li1': t.guideGettingStartedLi1,
-            'guide-getting-started-li2': t.guideGettingStartedLi2,
-            'guide-getting-started-li3': t.guideGettingStartedLi3,
-            'guide-interface-title': t.guideInterfaceTitle, 
-            'guide-interface-p1': t.guideInterfaceP1,
-            'guide-interface-li1': t.guideInterfaceLi1,
-            'guide-interface-li2': t.guideInterfaceLi2,
-            'guide-interface-li3': t.guideInterfaceLi3,
-            'guide-dashboard-title': t.guideDashboardTitle,
-            'guide-dashboard-p1': t.guideDashboardP1,
-            'guide-dashboard-li1': t.guideDashboardLi1,
-            'guide-dashboard-li2': t.guideDashboardLi2,
-            'guide-dashboard-li3': t.guideDashboardLi3,
-            'guide-calendar-title': t.guideCalendarTitle,
-            'guide-calendar-p1': t.guideCalendarP1,
-            'guide-calendar-p2': t.guideCalendarP2,
-            'legend-stp-guide': t.legendStp, 
-            'legend-gms-guide': t.legendGms, 
-            'guide-calendar-li1': t.guideCalendarLi1, 
-            'guide-calendar-li2': t.guideCalendarLi2, 
-            'guide-calendar-li3': t.guideCalendarLi3,
-            'guide-prospects-title': t.guideProspectsTitle, 
-            'guide-prospects-p1': t.guideProspectsP1,
-            'guide-prospects-li1': t.guideProspectsLi1,
-            'guide-prospects-li2': t.guideProspectsLi2,
-            'guide-prospects-li3': t.guideProspectsLi3,
-            'guide-prospects-p2': t.guideProspectsP2,
-            'guide-prospects-li4': t.guideProspectsLi4,
-            'guide-prospects-li5': t.guideProspectsLi5,
-            'guide-prospects-p3': t.guideProspectsP3,
-            'guide-analytics-title': t.guideAnalyticsTitle,
-            'guide-analytics-p1': t.guideAnalyticsP1,
-            'guide-analytics-li1': t.guideAnalyticsLi1,
-            'guide-analytics-p2': t.guideAnalyticsP2,
-            'guide-analytics-li2': t.guideAnalyticsLi2,
-            'guide-analytics-li3': t.guideAnalyticsLi3,
-            'guide-analytics-p3': t.guideAnalyticsP3,
-            'guide-settings-title': t.guideSettingsTitle,
-            'guide-settings-p1': t.guideSettingsP1,
-            'guide-settings-li1': t.guideSettingsLi1,
-            'guide-settings-p2': t.guideSettingsP2,
-            'guide-settings-p3': t.guideSettingsP3,
-            'guide-settings-li2': t.guideSettingsLi2,
-            'analytics-trend-title': t.analyticsTrendTitle, 
-            'copy-stp-btn': t.copyStpBtn, 
-            'copy-gms-btn': t.copyGmsBtn, 
-            'welcome-text': t.welcome,
-
-            // --- FIX IS HERE: ADD THE AUTH FORM IDs ---
-            'auth-title-login': t['auth-title-login'],
-            'auth-email-label-login': t['auth-email-label-login'],
-            'auth-password-label-login': t['auth-password-label-login'],
-            'login-btn': t['login-btn'],
-            'auth-no-account': t['auth-no-account'],
-            'show-signup-link': t['show-signup-link'],
-            'forgot-password-link': t['forgot-password-link'],
-            'auth-title-signup': t['auth-title-signup'],
-            'auth-email-label-signup': t['auth-email-label-signup'],
-            'auth-password-label-signup': t['auth-password-label-signup'],
-            'signup-btn': t['signup-btn'],
-            'auth-have-account': t['auth-have-account'],
-            'show-login-link': t['show-login-link'],
-            'logout-btn': t['logout-btn'],
-            'logout-title': t['logout-title'],
-            'logout-desc': t['logout-desc'],
-            'user-info-label': t['user-info-label'],
-            'account-info-title': t['account-info-title'],
-            'logged-in-as-label': t['logged-in-as-label']
+            'guide-main-title': t.guideMainTitle,
+            'guide-getting-started-title': t.guideGettingStartedTitle, 'guide-getting-started-p1': t.guideGettingStartedP1, 'guide-getting-started-p2': t.guideGettingStartedP2,
+            'guide-getting-started-li1': t.guideGettingStartedLi1, 'guide-getting-started-li2': t.guideGettingStartedLi2, 'guide-getting-started-li3': t.guideGettingStartedLi3,
+            'guide-interface-title': t.guideInterfaceTitle, 'guide-interface-p1': t.guideInterfaceP1, 'guide-interface-li1': t.guideInterfaceLi1, 'guide-interface-li2': t.guideInterfaceLi2, 'guide-interface-li3': t.guideInterfaceLi3,
+            'guide-dashboard-title': t.guideDashboardTitle, 'guide-dashboard-p1': t.guideDashboardP1, 'guide-dashboard-li1': t.guideDashboardLi1, 'guide-dashboard-li2': t.guideDashboardLi2, 'guide-dashboard-li3': t.guideDashboardLi3,
+            'guide-calendar-title': t.guideCalendarTitle, 'guide-calendar-p1': t.guideCalendarP1, 'guide-calendar-p2': t.guideCalendarP2,
+            'legend-stp-guide': t.legendStp, 'legend-gms-guide': t.legendGms, 'guide-calendar-li1': t.guideCalendarLi1, 'guide-calendar-li2': t.guideCalendarLi2, 'guide-calendar-li3': t.guideCalendarLi3,
+            'guide-prospects-title': t.guideProspectsTitle, 'guide-prospects-p1': t.guideProspectsP1, 'guide-prospects-li1': t.guideProspectsLi1, 'guide-prospects-li2': t.guideProspectsLi2, 'guide-prospects-li3': t.guideProspectsLi3,
+            'guide-prospects-p2': t.guideProspectsP2, 'guide-prospects-li4': t.guideProspectsLi4, 'guide-prospects-li5': t.guideProspectsLi5, 'guide-prospects-p3': t.guideProspectsP3,
+            'guide-analytics-title': t.guideAnalyticsTitle, 'guide-analytics-p1': t.guideAnalyticsP1, 'guide-analytics-li1': t.guideAnalyticsLi1, 'guide-analytics-p2': t.guideAnalyticsP2,
+            'guide-analytics-li2': t.guideAnalyticsLi2, 'guide-analytics-li3': t.guideAnalyticsLi3, 'guide-analytics-p3': t.guideAnalyticsP3,
+            'guide-settings-title': t.guideSettingsTitle, 'guide-settings-p1': t.guideSettingsP1, 'guide-settings-li1': t.guideSettingsLi1, 'guide-settings-p2': t.guideSettingsP2, 'guide-settings-p3': t.guideSettingsP3, 'guide-settings-li2': t.guideSettingsLi2,
+            'analytics-trend-title': t.analyticsTrendTitle, 'copy-stp-btn': t.copyStpBtn, 'copy-gms-btn': t.copyGmsBtn, 'welcome-text': t.welcome,
+            'auth-title-login': t['auth-title-login'], 'auth-email-label-login': t['auth-email-label-login'], 'auth-password-label-login': t['auth-password-label-login'],
+            'login-btn': t['login-btn'], 'auth-no-account': t['auth-no-account'], 'show-signup-link': t['show-signup-link'], 'forgot-password-link': t['forgot-password-link'],
+            'auth-title-signup': t['auth-title-signup'], 'auth-email-label-signup': t['auth-email-label-signup'], 'auth-password-label-signup': t['auth-password-label-signup'],
+            'signup-btn': t['signup-btn'], 'auth-have-account': t['auth-have-account'], 'show-login-link': t['show-login-link'],
+            'logout-btn': t['logout-btn'], 'logout-title': t['logout-title'], 'logout-desc': t['logout-desc'], 'user-info-label': t['user-info-label'],
+            'account-info-title': t['account-info-title'], 'logged-in-as-label': t['logged-in-as-label']
         };
-        for (const id in elements) { 
-            const el = document.getElementById(id);
-            if (el) el.innerHTML = elements[id];
+        for (const id in elements) {
+            const el = document.getElementById(id); if (el) el.innerHTML = elements[id];
         }
-
         const statusFilter = document.getElementById('status-filter');
         const statuses = ['STP', 'GMS_Appointment', 'KIT_STP', 'KIT_GMS', 'Joined', 'Disqualified', 'Not_Joining'];
         let statusOptionsHtml = `<option value="all">${t.allStatuses}</option>`;
-        statuses.forEach(status => {
-            statusOptionsHtml += `<option value="${status}">${t[status]}</option>`;
-        });
+        statuses.forEach(status => { statusOptionsHtml += `<option value="${status}">${t[status]}</option>`; });
         statusFilter.innerHTML = statusOptionsHtml;
-
         document.getElementById('search-input').placeholder = t.searchPlaceholder;
         document.getElementById('tags').placeholder = t.tagsPlaceholder;
         const sortSelect = document.getElementById('sort-by');
         sortSelect.innerHTML = `<option value="newest">${t.sort.newest}</option><option value="name_az">${t.sort.name_az}</option><option value="name_za">${t.sort.name_za}</option><option value="status">${t.sort.status}</option>`;
-        
         renderAll();
     }
 
-    function renderAll() { 
-        populateDownlineDatalist();
-        renderDashboard(); 
-        renderProspectList(); 
-        renderCalendar(); 
-        if (document.getElementById('analytics').classList.contains('active')) {
-            populateDownlineFilter();
-            renderAnalytics();
-        }
-        renderAvailableSlotsSidebar(); 
-        renderToggles(); 
-        renderDataStatus();
+    function renderAll() {
+        populateDownlineDatalist(); renderDashboard(); renderProspectList(); renderCalendar();
+        if (document.getElementById('analytics').classList.contains('active')) { populateDownlineFilter(); renderAnalytics(); }
+        renderAvailableSlotsSidebar(); renderToggles(); renderDataStatus();
     }
     
+    const confirmModal = document.getElementById('confirm-modal');
+    const confirmModalOkBtn = document.getElementById('confirm-modal-ok-btn');
+    const confirmModalCancelBtn = document.getElementById('confirm-modal-cancel-btn');
+
+    function showConfirmation(text, title = translations[currentLang].confirmActionTitle, okClass = 'btn-danger') {
+        return new Promise((resolve) => {
+            document.getElementById('confirm-modal-title').textContent = title;
+            document.getElementById('confirm-modal-text').textContent = text;
+            confirmModalOkBtn.className = `btn-${okClass.replace('btn-', '')}`;
+            confirmModalOkBtn.textContent = translations[currentLang].confirmBtnOK;
+            confirmModalCancelBtn.textContent = translations[currentLang].confirmBtnCancel;
+
+            confirmModal.style.display = 'flex';
+
+            const onOk = () => {
+                confirmModal.style.display = 'none';
+                cleanup();
+                resolve(true);
+            };
+
+            const onCancel = () => {
+                confirmModal.style.display = 'none';
+                cleanup();
+                resolve(false);
+            };
+
+            const cleanup = () => {
+                confirmModalOkBtn.removeEventListener('click', onOk);
+                confirmModalCancelBtn.removeEventListener('click', onCancel);
+            };
+
+            confirmModalOkBtn.addEventListener('click', onOk);
+            confirmModalCancelBtn.addEventListener('click', onCancel);
+        });
+    }
+
     const stpPicker = flatpickr("#stp-datetime", { enableTime: true, dateFormat: "Y-m-d H:i", time_24hr: true });
     const gmsPicker = flatpickr("#gms-datetime", { enableTime: true, dateFormat: "Y-m-d H:i", time_24hr: true });
-    const analyticsPicker = flatpickr("#analytics-month", { 
-        plugins: [ new monthSelectPlugin({ shorthand: false, dateFormat: "Y-m", altFormat: "F Y" }) ],
-        altInput: true,
-        onChange: () => renderAnalytics() 
-    });
+    const analyticsPicker = flatpickr("#analytics-month", { plugins: [ new monthSelectPlugin({ shorthand: false, dateFormat: "Y-m", altFormat: "F Y" }) ], altInput: true, onChange: () => renderAnalytics() });
     
-    const prospectModal = document.getElementById('prospect-modal'); 
+    const prospectModal = document.getElementById('prospect-modal');
     const actionModal = document.getElementById('action-modal');
     const plannerModal = document.getElementById('planner-modal');
     const availabilityModal = document.getElementById('availability-modal');
@@ -1096,158 +837,152 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('lang-toggle').addEventListener('click', () => setLanguage(currentLang === 'zh-CN' ? 'en' : 'zh-CN'));
     
     window.addEventListener('click', (e) => {
-        if (!e.target.closest('.card-menu-container')) {
-            document.querySelectorAll('.card-menu.open').forEach(menu => menu.classList.remove('open'));
-        }
-        if (e.target == prospectModal) prospectModal.style.display = 'none'; 
-        if (e.target == actionModal) actionModal.style.display = 'none'; 
+        if (!e.target.closest('.card-menu-container')) { document.querySelectorAll('.card-menu.open').forEach(menu => menu.classList.remove('open')); }
+        if (e.target == prospectModal) prospectModal.style.display = 'none';
+        if (e.target == actionModal) actionModal.style.display = 'none';
         if (e.target == plannerModal) plannerModal.style.display = 'none';
         if (e.target == availabilityModal) availabilityModal.style.display = 'none';
+        if (e.target == confirmModal) { confirmModal.style.display = 'none'; }
     });
     
     document.querySelectorAll('.tab-button').forEach(button => { button.addEventListener('click', () => { document.querySelectorAll('.tab-button, .tab-content').forEach(el => el.classList.remove('active')); button.classList.add('active'); document.getElementById(button.dataset.tab).classList.add('active'); if(button.dataset.tab === 'analytics') { populateDownlineFilter(); renderAnalytics(); } }); });
     
-    document.getElementById('owner-type').addEventListener('change', (e) => {
-        document.getElementById('downline-name-group').style.display = e.target.value === 'downline' ? 'block' : 'none';
-    });
+    document.getElementById('owner-type').addEventListener('change', (e) => { document.getElementById('downline-name-group').style.display = e.target.value === 'downline' ? 'block' : 'none'; });
 
+    // ============================
+    // ===== FIX #1: START ========
+    // Reworked the prospect form submission to be more efficient and reliable.
+    // Instead of reloading all prospects, it now gets the saved record back
+    // from the database and updates the local list directly.
+    // This fixes the issues with dashboard/calendar not updating immediately.
+    // ============================
     document.getElementById('prospect-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        if (!user) return alert("You must be logged in to save.");
+        const { data: { user } } = await supabaseClient.auth.getUser(); if (!user) return alert("You must be logged in to save.");
 
         const id = document.getElementById('prospect-id').value;
         const isEditing = !!id;
-
+        
+        // Find existing prospect data if we are editing
         let existingProspect = isEditing ? prospects.find(p => p.id === id) : {};
 
+        // Build the prospect data object for saving
         const prospectData = {
-            id: isEditing ? id : undefined,
+            id: isEditing ? id : undefined, // Use string ID for editing
             user_id: user.id,
             name: document.getElementById('name').value,
             phone: document.getElementById('phone').value,
             age: document.getElementById('age').value || null,
             occupation: document.getElementById('occupation').value,
             tags: document.getElementById('tags').value.split(',').map(tag => tag.trim()).filter(tag => tag),
-            stp_time: document.getElementById('stp-datetime').value,
+            stp_time: document.getElementById('stp-datetime').value || null,
             owner_type: document.getElementById('owner-type').value,
             downline_name: document.getElementById('downline-name').value.trim(),
             status: isEditing ? existingProspect.status : 'STP',
-            kit_counter: isEditing ? existingProspect.kitCounter : 0,
-            gms_time: isEditing ? existingProspect.gmsTime : null,
-            status_history: isEditing ? existingProspect.statusHistory : [{ status: 'STP', date: new Date().toISOString() }],
-            notes: isEditing ? existingProspect.notes : []
+            kit_counter: isEditing ? (existingProspect.kit_counter || 0) : 0,
+            gms_time: isEditing ? existingProspect.gms_time : null,
+            status_history: isEditing ? (existingProspect.status_history || []) : [],
+            notes: isEditing ? (existingProspect.notes || []) : []
         };
 
+        // Add status history only if it's a new prospect
+        if (!isEditing) {
+            prospectData.status_history.push({ status: 'STP', date: new Date().toISOString() });
+        }
+
+        // Add the new note from the form
         const newNote = document.getElementById('notes').value;
         if (newNote) {
             prospectData.notes.push({ date: new Date().toISOString(), content: (isEditing ? "[EDIT] " : "") + newNote });
         }
-
-        const { error } = await supabaseClient.from('prospects').upsert(prospectData, { onConflict: 'id' });
+        
+        // Upsert the data and use .select().single() to get the saved record back
+        const { data: savedProspect, error } = await supabaseClient.from('prospects')
+            .upsert(prospectData)
+            .select()
+            .single();
 
         if (error) {
             console.error(error);
             alert('Error saving prospect: ' + error.message);
         } else {
-            await startApp(user); // Reload all data from the database
+            // Update the local 'prospects' array intelligently
+            if (isEditing) {
+                const index = prospects.findIndex(p => p.id === savedProspect.id);
+                if (index > -1) {
+                    prospects[index] = savedProspect; // Replace existing
+                }
+            } else {
+                prospects.push(savedProspect); // Add new
+            }
             prospectModal.style.display = 'none';
+            renderAll(); // Re-render all components with the updated local data
         }
     });
 
     document.getElementById('action-form').addEventListener('submit', async (e) => {
-        e.preventDefault(); 
-        const id = document.getElementById('action-prospect-id').value; 
-        const action = document.getElementById('action-type').value; 
-        const index = prospects.findIndex(p => p.id === id); 
-        if (index === -1) return;
-        
-        const p = prospects[index]; 
-        const notes = document.getElementById('action-notes').value; 
+        e.preventDefault();
+        const id = document.getElementById('action-prospect-id').value;
+        const action = document.getElementById('action-type').value;
+        const index = prospects.findIndex(p => p.id === id); if (index === -1) return;
+        const p = { ...prospects[index] };
+        const notes = document.getElementById('action-notes').value;
+
+        if (!p.notes) p.notes = [];
+        if (!p.status_history) p.status_history = [];
+
         if(notes) p.notes.push({ date: new Date().toISOString(), content: `[${action}] ${notes}` });
         if (!p.tags) p.tags = [];
         
         const gmsTime = document.getElementById('gms-datetime').value;
-        if (action === 'schedule_gms' && isTimeSlotBooked(gmsTime, p.id)) {
-            alert(translations[currentLang].errorDoubleBooking);
-            return;
-        }
-        
-        let confirmAction = true;
-        if (action === 'joined') confirmAction = confirm(translations[currentLang].confirmJoin);
-        if (action === 'disqualify') confirmAction = confirm(translations[currentLang].confirmDisqualify);
-        if (action === 'not_joining') confirmAction = confirm(translations[currentLang].confirmNotJoining);
+        if (action === 'schedule_gms' && isTimeSlotBooked(gmsTime, p.id)) { alert(translations[currentLang].errorDoubleBooking); return; }
 
+        let confirmAction = true;
+        if (['joined', 'disqualify', 'not_joining'].includes(action)) {
+            const message = translations[currentLang][`confirm${action.charAt(0).toUpperCase() + action.slice(1)}`];
+            confirmAction = await showConfirmation(message, translations[currentLang].confirmActionTitle, action === 'joined' ? 'btn-success' : 'btn-danger');
+        }
         if (!confirmAction) return;
 
         switch(action) {
-            case 'schedule_gms': 
-                addBackAvailability(p.gmsTime);
-                p.status = 'GMS_Appointment'; p.gmsTime = gmsTime; p.kitCounter = 0; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); 
-                updateAvailability(p.gmsTime);
-                break;
-            case 'edit_gms':
-                const originalGmsTime = p.gmsTime;
-                // Check for double booking, excluding the current prospect's original time slot
-                if (isTimeSlotBooked(gmsTime, p.id)) {
-                    alert(translations[currentLang].errorDoubleBooking);
-                    return; // Stop the function if the new time is booked
-                }
-                addBackAvailability(originalGmsTime); // Free up the old time slot
-                p.gmsTime = gmsTime; // Assign the new time
-                updateAvailability(p.gmsTime); // Book the new time slot
-                p.statusHistory.push({ status: 'GMS_Rescheduled', date: new Date().toISOString() }); // Add a history entry
-                break;
-            case 'kit_stp': p.status = 'KIT_STP'; p.kitCounter = 1; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); p.tags.push('FollowUp-1'); break;
-            case 'kit_gms': p.status = 'KIT_GMS'; p.kitCounter = 1; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); p.tags.push('FollowUp-1'); break;
+            case 'schedule_gms': p.status = 'GMS_Appointment'; p.gms_time = gmsTime; p.kit_counter = 0; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); break;
+            case 'edit_gms': if (isTimeSlotBooked(gmsTime, p.id)) { alert(translations[currentLang].errorDoubleBooking); return; } p.gms_time = gmsTime; p.status_history.push({ status: 'GMS_Rescheduled', date: new Date().toISOString() }); break;
+            case 'kit_stp': p.status = 'KIT_STP'; p.kit_counter = 1; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); p.tags.push('FollowUp-1'); break;
+            case 'kit_gms': p.status = 'KIT_GMS'; p.kit_counter = 1; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); p.tags.push('FollowUp-1'); break;
             case 'disqualify': p.status = 'Disqualified'; break; case 'not_joining': p.status = 'Not_Joining'; break;
             case 'joined': p.status = 'Joined'; break;
-            case 'follow_up': p.kitCounter++; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); p.tags.push(`FollowUp-${p.kitCounter}`); break;
+            case 'follow_up': if (!p.kit_counter) p.kit_counter = 0; p.kit_counter++; p.tags = p.tags.filter(tag => !tag.startsWith('FollowUp-')); p.tags.push(`FollowUp-${p.kit_counter}`); break;
         }
-        p.statusHistory.push({ status: p.status, date: new Date().toISOString() }); 
+        if (action !== 'follow_up' && action !== 'edit_gms') p.status_history.push({ status: p.status, date: new Date().toISOString() });
         
-        const { data: { user } } = await supabaseClient.auth.getUser();
         const { error } = await supabaseClient.from('prospects').update(p).eq('id', p.id);
-
-        if (error) {
-            console.error(error);
-            alert('Error updating status: ' + error.message);
-        } else {
-            await startApp(user); // Reload data
-        }
+        if (error) { console.error(error); alert('Error updating status: ' + error.message); } 
+        else { prospects[index] = p; renderAll(); }
         actionModal.style.display = 'none';
     });
 
     function openActionModal(id, action) {
-        document.getElementById('action-form').reset(); gmsPicker.clear(); document.getElementById('action-prospect-id').value = id; document.getElementById('action-type').value = action; const gmsGroup = document.getElementById('gms-schedule-group'); gmsGroup.style.display = action === 'schedule_gms' || 'edit_gms' ? 'block' : 'none'; document.getElementById('gms-datetime').required = action === 'schedule_gms' || action === 'edit_gms'; actionModal.style.display = 'flex';
+        document.getElementById('action-form').reset(); gmsPicker.clear(); document.getElementById('action-prospect-id').value = id; document.getElementById('action-type').value = action; const gmsGroup = document.getElementById('gms-schedule-group'); gmsGroup.style.display = action === 'schedule_gms' || action === 'edit_gms' ? 'block' : 'none'; document.getElementById('gms-datetime').required = action === 'schedule_gms' || action === 'edit_gms'; actionModal.style.display = 'flex';
     }
     function openEditModal(prospectId) {
-        const index = prospects.findIndex(p => p.id === prospectId); if (index === -1) return;
-        const p = prospects[index];
+        const p = prospects.find(p => p.id === prospectId); if (!p) return;
         document.getElementById('prospect-form').reset();
         document.getElementById('modal-title').textContent = translations[currentLang].modalTitleEdit;
         document.getElementById('prospect-id').value = p.id; document.getElementById('name').value = p.name;
         document.getElementById('phone').value = p.phone; document.getElementById('age').value = p.age;
         document.getElementById('occupation').value = p.occupation; document.getElementById('tags').value = p.tags ? p.tags.join(', ') : '';
-        document.getElementById('owner-type').value = p.ownerType || 'user';
+        document.getElementById('owner-type').value = p.owner_type || 'user';
         const downlineGroup = document.getElementById('downline-name-group');
-        if (p.ownerType === 'downline') {
-            downlineGroup.style.display = 'block';
-            document.getElementById('downline-name').value = p.downlineName;
-        } else {
-            downlineGroup.style.display = 'none';
-        }
-        stpPicker.setDate(p.stpTime, true); document.getElementById('notes').value = ''; 
+        if (p.owner_type === 'downline') { downlineGroup.style.display = 'block'; document.getElementById('downline-name').value = p.downline_name; } else { downlineGroup.style.display = 'none'; }
+        stpPicker.setDate(p.stp_time, true); document.getElementById('notes').value = '';
         prospectModal.style.display = 'flex';
     }
     async function deleteProspect(prospectId) {
-        if (confirm(translations[currentLang].confirmDelete)) {
+        if (await showConfirmation(translations[currentLang].confirmDelete)) {
             const { error } = await supabaseClient.from('prospects').delete().eq('id', prospectId);
-            if (error) {
-                alert('Error deleting prospect: ' + error.message);
-            } else {
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                await startApp(user); // Reload data after deleting
+            if (error) { alert('Error deleting prospect: ' + error.message); } else { 
+                prospects = prospects.filter(p => p.id !== prospectId); // Remove locally
+                renderAll(); // Re-render
             }
         }
     }
@@ -1255,64 +990,45 @@ document.addEventListener('DOMContentLoaded', () => {
     function formatChineseTime(date) {
         const hour = date.getHours();
         const minute = String(date.getMinutes()).padStart(2, '0');
+        const t = translations['zh-CN'].timePeriods;
         let period = '';
-        const t = translations['zh-CN'];
 
-        if (hour >= 0 && hour < 5) period = t.guidePeriodLingchen;
-        else if (hour >= 5 && hour < 12) period = t.guidePeriodZaoshang;
-        else if (hour === 12) period = t.guidePeriodZhongwu;
-        else if (hour > 12 && hour < 18) period = t.guidePeriodXiawu;
-        else if (hour === 18) period = t.guidePeriodBangwan;
-        else period = t.guidePeriodWanshang;
+        if (hour < 5) period = t.lingchen;
+        else if (hour < 12) period = t.zaoshang;
+        else if (hour < 13) period = t.zhongwu;
+        else if (hour < 18) period = t.xiawu;
+        else if (hour < 19) period = t.bangwan;
+        else period = t.wanshang;
         
         let displayHour = hour % 12;
-        if (displayHour === 0) displayHour = 12; 
+        if (displayHour === 0) displayHour = 12;
         
         return `${period} ${displayHour}:${minute}`;
     }
 
-    function formatDate(dateString) { 
-        if (!dateString) return 'N/A'; 
-        const date = new Date(dateString);
-
-        if (isNaN(date.getTime())) {
-            console.error("Failed to parse date string:", dateString);
-            // Fallback to a safe, user-friendly value.
-            return "Never";
-        }
-        if (currentLang === 'zh-CN') {
-            const year = date.getFullYear();
-            const month = date.getMonth() + 1;
-            const day = date.getDate();
-            return `${year}年${month}月${day}日 ${formatChineseTime(date)}`;
-        }
-        return date.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }); 
+    function formatDate(dateString) {
+        if (!dateString) return 'N/A'; const date = new Date(dateString); if (isNaN(date.getTime())) { return "N/A"; }
+        if (currentLang === 'zh-CN') { const year = date.getFullYear(); const month = date.getMonth() + 1; const day = date.getDate(); return `${year}年${month}月${day}日 ${formatChineseTime(date)}`; }
+        return date.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
     }
     
     function isTimeSlotBooked(dateTimeString, prospectIdToExclude = null) {
         if (!dateTimeString) return false;
-        const newApptTime = new Date(dateTimeString).getTime();
-        const thirtyMinutes = 30 * 60 * 1000;
+        const newApptTime = new Date(dateTimeString).getTime(); const thirtyMinutes = 30 * 60 * 1000;
         return prospects.some(p => {
             if (p.id === prospectIdToExclude) return false;
-            const stpTime = p.stpTime ? new Date(p.stpTime).getTime() : 0;
-            if (stpTime && Math.abs(newApptTime - stpTime) < thirtyMinutes) return true;
-            const gmsTime = p.gmsTime ? new Date(p.gmsTime).getTime() : 0;
-            if (gmsTime && Math.abs(newApptTime - gmsTime) < thirtyMinutes) return true;
+            const stpTime = p.stp_time ? new Date(p.stp_time).getTime() : 0; if (stpTime && Math.abs(newApptTime - stpTime) < thirtyMinutes) return true;
+            const gmsTime = p.gms_time ? new Date(p.gms_time).getTime() : 0; if (gmsTime && Math.abs(newApptTime - gmsTime) < thirtyMinutes) return true;
             return false;
         });
     }
 
     function renderDashboard() {
-        const appointmentsGrid = document.getElementById('appointments-grid'); 
-        const followUpsGrid = document.getElementById('follow-ups-grid');
-        appointmentsGrid.innerHTML = ''; 
-        followUpsGrid.innerHTML = ''; 
-        const now = new Date(); 
-        let upcoming = [];
+        const appointmentsGrid = document.getElementById('appointments-grid'); const followUpsGrid = document.getElementById('follow-ups-grid');
+        appointmentsGrid.innerHTML = ''; followUpsGrid.innerHTML = ''; const now = new Date(); let upcoming = [];
         prospects.forEach(p => {
-            if (p.status === 'STP' && p.stpTime && new Date(p.stpTime) > now) upcoming.push({ p, type: 'STP', date: new Date(p.stpTime) });
-            if (p.status === 'GMS_Appointment' && p.gmsTime && new Date(p.gmsTime) > now) upcoming.push({ p, type: 'GMS', date: new Date(p.gmsTime) });
+            if (p.status === 'STP' && p.stp_time && new Date(p.stp_time) > now) upcoming.push({ p, type: 'STP', date: new Date(p.stp_time) });
+            if (p.status === 'GMS_Appointment' && p.gms_time && new Date(p.gms_time) > now) upcoming.push({ p, type: 'GMS', date: new Date(p.gms_time) });
         });
         upcoming.sort((a, b) => a.date - b.date);
         if (upcoming.length === 0) appointmentsGrid.innerHTML = `<p>${translations[currentLang].noAppointmentsText}</p>`;
@@ -1322,7 +1038,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (followUps.length === 0) followUpsGrid.innerHTML = `<p>${translations[currentLang].noFollowUpsText}</p>`;
         else followUps.forEach(p => {
             const card = document.createElement('div'); card.className = 'reminder-card';
-            card.innerHTML = `<h3>${p.name}</h3><p><strong>${translations[currentLang].status}:</strong> ${translations[currentLang][p.status]}</p><p><strong>${translations[currentLang].kitCounter}:</strong> ${p.kitCounter}</p>
+            card.innerHTML = `<h3>${p.name}</h3><p><strong>${translations[currentLang].status}:</strong> ${translations[currentLang][p.status]}</p><p><strong>${translations[currentLang].kitCounter}:</strong> ${p.kit_counter || 0}</p>
             <div class="prospect-actions"><button class="btn-primary" data-id="${p.id}" data-action="${p.status === 'KIT_STP' ? 'schedule_gms' : 'joined'}">${p.status === 'KIT_STP' ? translations[currentLang].actionScheduleGMS : translations[currentLang].actionJoined}</button>
             <button class="btn-warning" data-id="${p.id}" data-action="follow_up">${translations[currentLang].actionFollowUp}</button></div>`;
             followUpsGrid.appendChild(card);
@@ -1334,45 +1050,25 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('copy-gms-btn').addEventListener('click', () => copyAppointmentsToClipboard('GMS'));
 
     function copyAppointmentsToClipboard(type) {
-        const now = new Date();
-        let upcoming = [];
+        const now = new Date(); let upcoming = [];
         prospects.forEach(p => {
-            if (p.status === 'STP' && p.stpTime && new Date(p.stpTime) > now) upcoming.push({ p, type: 'STP', date: new Date(p.stpTime) });
-            if (p.status === 'GMS_Appointment' && p.gmsTime && new Date(p.gmsTime) > now) upcoming.push({ p, type: 'GMS', date: new Date(p.gmsTime) });
+            if (p.status === 'STP' && p.stp_time && new Date(p.stp_time) > now) upcoming.push({ p, type: 'STP', date: new Date(p.stp_time) });
+            if (p.status === 'GMS_Appointment' && p.gms_time && new Date(p.gms_time) > now) upcoming.push({ p, type: 'GMS', date: new Date(p.gms_time) });
         });
-
-        const appointmentsToCopy = upcoming.filter(item => item.type === type);
+        const appointmentsToCopy = upcoming.filter(item => item.type === type).sort((a, b) => a.date - b.date);
         if (appointmentsToCopy.length === 0) return;
-
         const dayNames = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-
         let textToCopy = type === 'STP' ? 'STP资料\n' : 'GMS资料\n';
         appointmentsToCopy.forEach((item, index) => {
-            const d = item.date;
-            const formattedDate = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()} ${dayNames[d.getDay()]} ${d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
+            const d = item.date; const formattedDate = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()} ${dayNames[d.getDay()]} ${d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
             if(type === 'STP') {
-                textToCopy += `\n(${index+1})\n`;
-                textToCopy += `名字：${item.p.name}\n`;
-                textToCopy += `职业（工作/读书）：${item.p.occupation || ''}\n`;
-                textToCopy += `年龄：${item.p.age || ''}\n`;
-                textToCopy += `邀约时间：${formattedDate}\n`;
-            } else { // GMS
-                textToCopy += `\n(${index+1})\n`;
-                textToCopy += `名字 ：${item.p.name}\n`;
-                textToCopy += `号码 ：${item.p.phone || ''}\n`;
-                textToCopy += `年龄 ：${item.p.age || ''}\n`;
-                const lastNote = item.p.notes.length > 0 ? item.p.notes[item.p.notes.length - 1].content : '';
-                textToCopy += `加入/不加入：${lastNote}\n`;
-                textToCopy += `邀约时间 ：${formattedDate}\n`;
+                textToCopy += `\n(${index+1})\n`; textToCopy += `名字：${item.p.name}\n`; textToCopy += `职业（工作/读书）：${item.p.occupation || ''}\n`; textToCopy += `年龄：${item.p.age || ''}\n`; textToCopy += `邀约时间：${formattedDate}\n`;
+            } else {
+                textToCopy += `\n(${index+1})\n`; textToCopy += `名字 ：${item.p.name}\n`; textToCopy += `号码 ：${item.p.phone || ''}\n`; textToCopy += `年龄 ：${item.p.age || ''}\n`;
+                const lastNote = (item.p.notes && item.p.notes.length > 0) ? item.p.notes[item.p.notes.length - 1].content : ''; textToCopy += `加入/不加入：${lastNote}\n`; textToCopy += `邀约时间 ：${formattedDate}\n`;
             }
         });
-        
-        navigator.clipboard.writeText(textToCopy.trim()).then(() => {
-            const btn = document.getElementById(`copy-${type.toLowerCase()}-btn`);
-            const originalText = btn.textContent;
-            btn.textContent = translations[currentLang].copied;
-            setTimeout(() => { btn.textContent = originalText; setLanguage(currentLang); }, 2000);
-        });
+        navigator.clipboard.writeText(textToCopy.trim()).then(() => { const btn = document.getElementById(`copy-${type.toLowerCase()}-btn`); const originalText = btn.textContent; btn.textContent = translations[currentLang].copied; setTimeout(() => { btn.textContent = originalText; setLanguage(currentLang); }, 2000); });
     }
 
     function renderPagination(totalProspects) {
@@ -1390,39 +1086,19 @@ document.addEventListener('DOMContentLoaded', () => {
         paginationControls.innerHTML = paginationHTML;
 
         document.querySelectorAll('.page-btn[data-page]').forEach(button => {
-            button.onclick = () => {
-                currentPage = Number(button.dataset.page);
-                renderProspectList();
-            };
+            button.onclick = () => { currentPage = Number(button.dataset.page); renderProspectList(); };
         });
-        document.getElementById('prev-page')?.addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                renderProspectList();
-            }
-        });
-        document.getElementById('next-page')?.addEventListener('click', () => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderProspectList();
-            }
-        });
+        document.getElementById('prev-page')?.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderProspectList(); } });
+        document.getElementById('next-page')?.addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; renderProspectList(); } });
     }
 
     function renderProspectList() {
-        const listDiv = document.getElementById('prospect-list');
-        listDiv.innerHTML = '';
-
-        const searchQuery = document.getElementById('search-input').value.toLowerCase();
-        const statusFilter = document.getElementById('status-filter').value;
-        const sortBy = document.getElementById('sort-by').value;
+        const listDiv = document.getElementById('prospect-list'); listDiv.innerHTML = '';
+        const searchQuery = document.getElementById('search-input').value.toLowerCase(); const statusFilter = document.getElementById('status-filter').value; const sortBy = document.getElementById('sort-by').value;
         let prospectsToDisplay = prospects;
 
-        if (prospectViewFilter === 'user') {
-            prospectsToDisplay = prospects.filter(p => p.ownerType !== 'downline');
-        } else if (prospectViewFilter === 'downline') {
-            prospectsToDisplay = prospects.filter(p => p.ownerType === 'downline');
-        }
+        if (prospectViewFilter === 'user') { prospectsToDisplay = prospects.filter(p => p.owner_type !== 'downline'); }
+        else if (prospectViewFilter === 'downline') { prospectsToDisplay = prospects.filter(p => p.owner_type === 'downline'); }
 
         let filtered = prospectsToDisplay.filter(p => {
             const matchesSearch = p.name.toLowerCase().includes(searchQuery) || (p.phone && p.phone.includes(searchQuery)) || (p.tags && p.tags.some(tag => tag.toLowerCase().includes(searchQuery)));
@@ -1430,24 +1106,20 @@ document.addEventListener('DOMContentLoaded', () => {
             return matchesSearch && matchesStatus;
         });
 
-        filtered.sort((a, b) => { switch (sortBy) { case 'name_az': return a.name.localeCompare(b.name); case 'name_za': return b.name.localeCompare(a.name); case 'status': return a.status.localeCompare(b.status); case 'newest': default: return new Date(b.stpTime) - new Date(a.stpTime); } });
+        filtered.sort((a, b) => { switch (sortBy) { case 'name_az': return a.name.localeCompare(b.name); case 'name_za': return b.name.localeCompare(a.name); case 'status': return a.status.localeCompare(b.status); case 'newest': default: return new Date(b.stp_time) - new Date(a.stp_time); } });
 
         const startIndex = (currentPage - 1) * PROSPECTS_PER_PAGE;
         const endIndex = startIndex + PROSPECTS_PER_PAGE;
         const paginatedProspects = filtered.slice(startIndex, endIndex);
 
-        if (paginatedProspects.length === 0) {
-            listDiv.innerHTML = `<p>${translations[currentLang].noFollowUpsText}</p>`;
-            renderPagination(0);
-            return;
-        }
+        if (paginatedProspects.length === 0) { listDiv.innerHTML = `<p>${translations[currentLang].noFollowUpsText}</p>`; renderPagination(0); return; }
 
         paginatedProspects.forEach(p => {
             const card = document.createElement('div'); card.className = 'prospect-card'; const statusText = translations[currentLang][p.status] || p.status;
-            let kitInfo = p.status.startsWith('KIT_') ? ` (${translations[currentLang].kitCounter}: ${p.kitCounter})` : '';
+            let kitInfo = p.status.startsWith('KIT_') ? ` (${translations[currentLang].kitCounter}: ${p.kit_counter || 0})` : '';
             let tagsHtml = p.tags && p.tags.length ? `<div class="tags-container">${p.tags.map(tag => `<span class="tag-badge">${tag}</span>`).join('')}</div>` : '';
-            let notesHtml = p.notes.map(note => `<small>${formatDate(note.date)}: ${note.content}</small>`).join('<br>');
-            let downlineHtml = p.ownerType === 'downline' ? `<div class="downline-info">👤 ${translations[currentLang].downlineInfo}${p.downlineName}</div>` : '';
+            let notesHtml = (p.notes || []).map(note => `<small>${formatDate(note.date)}: ${note.content}</small>`).join('<br>');
+            let downlineHtml = p.owner_type === 'downline' ? `<div class="downline-info">👤 ${translations[currentLang].downlineInfo}${p.downline_name}</div>` : '';
             card.innerHTML = `
                 <div class="card-header">
                     <h3>${p.name} <span class="status-badge status-${p.status}">${statusText}${kitInfo}</span></h3>
@@ -1459,24 +1131,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                 </div>
-                ${downlineHtml}
-                ${tagsHtml}
-                <p class="prospect-meta">
-                    <span><strong>${translations[currentLang].phone}:</strong> ${p.phone||'N/A'}</span><span class="separator">|</span>
-                    <span><strong>${translations[currentLang].age}:</strong> ${p.age||'N/A'}</span><span class="separator">|</span>
-                    <span><strong>${translations[currentLang].occupation}:</strong> ${p.occupation||'N/A'}</span>
-                </p>
-                <p class="prospect-meta">
-                    <span><strong>${translations[currentLang].stp_time}:</strong> ${formatDate(p.stpTime)}</span><span class="separator">|</span>
-                    <span><strong>GMS:</strong> ${formatDate(p.gmsTime)}</span>
-                </p>
+                ${downlineHtml} ${tagsHtml}
+                <p class="prospect-meta"> <span><strong>${translations[currentLang].phone}:</strong> ${p.phone||'N/A'}</span><span class="separator">|</span> <span><strong>${translations[currentLang].age}:</strong> ${p.age||'N/A'}</span><span class="separator">|</span> <span><strong>${translations[currentLang].occupation}:</strong> ${p.occupation||'N/A'}</span> </p>
+                <p class="prospect-meta"> <span><strong>${translations[currentLang].stp_time}:</strong> ${formatDate(p.stp_time)}</span><span class="separator">|</span> <span><strong>GMS:</strong> ${formatDate(p.gms_time)}</span> </p>
                 <div><strong>${translations[currentLang].notes}:</strong><br>${notesHtml}</div>
                 <div class="prospect-actions"></div>`;
             const actionsDiv = card.querySelector('.prospect-actions');
-            if (p.status === 'STP') { actionsDiv.innerHTML += `<button class="btn-primary" data-action="schedule_gms" data-id="${p.id}">${translations[currentLang].actionScheduleGMS}</button><button class="btn-secondary" data-action="kit_stp" data-id="${p.id}">${translations[currentLang].actionKeepInTouch}</button><button class="btn-danger" data-action="disqualify" data-id="${p.id}">${translations[currentLang].actionDisqualify}</button>`;
-            } else if (p.status === 'KIT_STP') { actionsDiv.innerHTML += `<button class="btn-primary" data-action="schedule_gms" data-id="${p.id}">${translations[currentLang].actionScheduleGMS}</button><button class="btn-warning" data-action="follow_up" data-id="${p.id}">${translations[currentLang].actionFollowUp} (${p.kitCounter})</button><button class="btn-danger" data-action="disqualify" data-id="${p.id}">${translations[currentLang].actionDisqualify}</button>`;
-            } else if (p.status === 'GMS_Appointment') { actionsDiv.innerHTML += `<button class="btn-success" data-action="joined" data-id="${p.id}">${translations[currentLang].actionJoined}</button><button class="btn-primary" data-action="edit_gms" data-id="${p.id}">${translations[currentLang].actionEditGMS}</button><button class="btn-secondary" data-action="kit_gms" data-id="${p.id}">${translations[currentLang].actionKeepInTouch}</button><button class="btn-danger" data-action="not_joining" data-id="${p.id}">${translations[currentLang].actionNotJoining}</button>`;
-            } else if (p.status === 'KIT_GMS') { actionsDiv.innerHTML += `<button class="btn-success" data-action="joined" data-id="${p.id}">${translations[currentLang].actionJoined}</button><button class="btn-warning" data-action="follow_up" data-id="${p.id}">${translations[currentLang].actionFollowUp} (${p.kitCounter})</button><button class="btn-danger" data-action="not_joining" data-id="${p.id}">${translations[currentLang].actionNotJoining}</button>`; }
+            if (p.status === 'STP') { actionsDiv.innerHTML += `<button class="btn-primary" data-action="schedule_gms" data-id="${p.id}">${translations[currentLang].actionScheduleGMS}</button><button class="btn-secondary" data-action="kit_stp" data-id="${p.id}">${translations[currentLang].actionKeepInTouch}</button><button class="btn-danger" data-action="disqualify" data-id="${p.id}">${translations[currentLang].actionDisqualify}</button>`; }
+            else if (p.status === 'KIT_STP') { actionsDiv.innerHTML += `<button class="btn-primary" data-action="schedule_gms" data-id="${p.id}">${translations[currentLang].actionScheduleGMS}</button><button class="btn-warning" data-action="follow_up" data-id="${p.id}">${translations[currentLang].actionFollowUp} (${p.kit_counter || 0})</button><button class="btn-danger" data-action="disqualify" data-id="${p.id}">${translations[currentLang].actionDisqualify}</button>`; }
+            else if (p.status === 'GMS_Appointment') { actionsDiv.innerHTML += `<button class="btn-success" data-action="joined" data-id="${p.id}">${translations[currentLang].actionJoined}</button><button class="btn-primary" data-action="edit_gms" data-id="${p.id}">${translations[currentLang].actionEditGMS}</button><button class="btn-secondary" data-action="kit_gms" data-id="${p.id}">${translations[currentLang].actionKeepInTouch}</button><button class="btn-danger" data-action="not_joining" data-id="${p.id}">${translations[currentLang].actionNotJoining}</button>`; }
+            else if (p.status === 'KIT_GMS') { actionsDiv.innerHTML += `<button class="btn-success" data-action="joined" data-id="${p.id}">${translations[currentLang].actionJoined}</button><button class="btn-warning" data-action="follow_up" data-id="${p.id}">${translations[currentLang].actionFollowUp} (${p.kit_counter || 0})</button><button class="btn-danger" data-action="not_joining" data-id="${p.id}">${translations[currentLang].actionNotJoining}</button>`; }
             listDiv.appendChild(card);
         });
 
@@ -1485,256 +1149,151 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.getElementById('prospect-list').addEventListener('click', (e) => {
         const menuToggle = e.target.closest('.menu-toggle-btn');
-        if (menuToggle) {
-            e.stopPropagation();
-            const prospectId = menuToggle.dataset.id;
-            const menu = document.getElementById(`menu-${prospectId}`);
-            const isMenuOpen = menu.classList.contains('open');
-            document.querySelectorAll('.card-menu.open').forEach(m => m.classList.remove('open'));
-            if (!isMenuOpen) menu.classList.add('open');
-            return;
-        }
+        if (menuToggle) { e.stopPropagation(); const prospectId = menuToggle.dataset.id; const menu = document.getElementById(`menu-${prospectId}`); const isMenuOpen = menu.classList.contains('open'); document.querySelectorAll('.card-menu.open').forEach(m => m.classList.remove('open')); if (!isMenuOpen) menu.classList.add('open'); return; }
         const menuItem = e.target.closest('.menu-item');
-        if (menuItem) {
-            e.preventDefault();
-            const prospectId = menuItem.dataset.id;
-            const action = menuItem.dataset.action;
-            if (action === 'edit') openEditModal(prospectId);
-            if (action === 'delete') deleteProspect(prospectId);
-            menuItem.closest('.card-menu').classList.remove('open');
-            return;
-        }
+        if (menuItem) { e.preventDefault(); const prospectId = menuItem.dataset.id; const action = menuItem.dataset.action; if (action === 'edit') openEditModal(prospectId); if (action === 'delete') deleteProspect(prospectId); menuItem.closest('.card-menu').classList.remove('open'); return; }
         const actionButton = e.target.closest('.prospect-actions button');
-        if (actionButton) {
-            openActionModal(actionButton.dataset.id, actionButton.dataset.action);
-        }
+        if (actionButton) { openActionModal(actionButton.dataset.id, actionButton.dataset.action); }
     });
     
-    document.getElementById('search-input').addEventListener('input', () => { currentPage = 1; renderProspectList(); }); 
+    document.getElementById('search-input').addEventListener('input', () => { currentPage = 1; renderProspectList(); });
     document.getElementById('sort-by').addEventListener('change', () => { currentPage = 1; renderProspectList(); });
     document.getElementById('status-filter').addEventListener('change', () => { currentPage = 1; renderProspectList(); });
-    document.getElementById('prospect-view-toggle').addEventListener('click', (e) => {
-        if (e.target.tagName === 'BUTTON') {
-            currentPage = 1;
-            prospectViewFilter = e.target.dataset.filter;
-            renderProspectList();
-            renderToggles();
-        }
-    });
+    document.getElementById('prospect-view-toggle').addEventListener('click', (e) => { if (e.target.tagName === 'BUTTON') { currentPage = 1; prospectViewFilter = e.target.dataset.filter; renderProspectList(); renderToggles(); } });
 
+    // ============================
+    // ===== FIX #2: START ========
+    // Made the analytics functions more robust. They now check if `status_history`
+    // exists before trying to read it, preventing errors with old data.
+    // ============================
     function renderAnalytics() {
-        const monthInput = document.getElementById('analytics-month');
-        const selectedMonth = monthInput.value;
-        if (!selectedMonth) return;
-        const [year, month] = selectedMonth.split('-').map(Number);
-        
+        const monthInput = document.getElementById('analytics-month'); const selectedMonth = monthInput.value; if (!selectedMonth) return; const [year, month] = selectedMonth.split('-').map(Number);
         let prospectsToAnalyze = prospects;
-        if (analyticsView === 'user') {
-            prospectsToAnalyze = prospects.filter(p => p.ownerType !== 'downline');
-        } else {
-            const selectedDownline = document.getElementById('downline-filter').value;
-            prospectsToAnalyze = prospects.filter(p => p.ownerType === 'downline' && (selectedDownline === 'all' || p.downlineName === selectedDownline));
-        }
-
+        if (analyticsView === 'user') { prospectsToAnalyze = prospects.filter(p => p.owner_type !== 'downline'); }
+        else { const selectedDownline = document.getElementById('downline-filter').value; prospectsToAnalyze = prospects.filter(p => p.owner_type === 'downline' && (selectedDownline === 'all' || p.downline_name === selectedDownline)); }
+        
         let newStps = 0, newGms = 0, newJoins = 0, newDisqualified = 0;
+        
         prospectsToAnalyze.forEach(p => {
-            const initialStp = p.statusHistory.find(h => h.status === 'STP');
-            if(initialStp) {
-                const historyDate = new Date(initialStp.date);
-                if (historyDate.getFullYear() === year && historyDate.getMonth() + 1 === month) newStps++;
-            }
-            p.statusHistory.forEach(history => {
+            if (!p.status_history || !Array.isArray(p.status_history)) return; // <-- ROBUSTNESS FIX
+
+            const initialStp = p.status_history.find(h => h.status === 'STP');
+            if(initialStp) { const historyDate = new Date(initialStp.date); if (historyDate.getFullYear() === year && historyDate.getMonth() + 1 === month) newStps++; }
+            
+            p.status_history.forEach(history => {
                 const historyDate = new Date(history.date);
                 if (historyDate.getFullYear() === year && historyDate.getMonth() + 1 === month) {
-                    if (history.status === 'GMS_Appointment') newGms++;
-                    if (history.status === 'Joined') newJoins++;
-                    if (history.status === 'Disqualified' || history.status === 'Not_Joining') newDisqualified++;
+                    if (history.status === 'GMS_Appointment') newGms++; if (history.status === 'Joined') newJoins++; if (history.status === 'Disqualified' || history.status === 'Not_Joining') newDisqualified++;
                 }
             });
         });
-        const summaryDiv = document.getElementById('analytics-summary');
-        const t = translations[currentLang].analytics;
+        const summaryDiv = document.getElementById('analytics-summary'); const t = translations[currentLang].analytics;
         summaryDiv.innerHTML = `<div class="analytics-card"><h4>${t.new_stps}</h4><div class="value">${newStps}</div></div><div class="analytics-card"><h4>${t.new_gms}</h4><div class="value">${newGms}</div></div>
                                 <div class="analytics-card"><h4>${t.new_joins}</h4><div class="value">${newJoins}</div></div><div class="analytics-card"><h4>${t.new_disqualified}</h4><div class="value">${newDisqualified}</div></div>`;
-        
         renderTrendChart(prospectsToAnalyze);
     }
     
     function getMonthlyTrendData(prospectsToAnalyze) {
-        const data = { labels: [], datasets: { stps: [], gms: [], joins: [], disqualified: [] } };
-        const now = new Date();
+        const data = { labels: [], datasets: { stps: [], gms: [], joins: [], disqualified: [] } }; const now = new Date();
         for (let i = 5; i >= 0; i--) {
-            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-            const year = d.getFullYear();
-            const month = d.getMonth() + 1;
-            const monthName = d.toLocaleString(currentLang === 'zh-CN' ? 'zh-CN' : 'en-US', { month: 'short' });
-            data.labels.push(monthName);
-
-            let stps = 0, gms = 0, joins = 0, disqualified = 0;
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1); const year = d.getFullYear(); const month = d.getMonth() + 1; const monthName = d.toLocaleString(currentLang === 'zh-CN' ? 'zh-CN' : 'en-US', { month: 'short' });
+            data.labels.push(monthName); let stps = 0, gms = 0, joins = 0, disqualified = 0;
+            
             prospectsToAnalyze.forEach(p => {
-                const initialStp = p.statusHistory.find(h => h.status === 'STP');
-                if(initialStp) {
-                    const historyDate = new Date(initialStp.date);
-                    if (historyDate.getFullYear() === year && historyDate.getMonth() + 1 === month) stps++;
-                }
-                p.statusHistory.forEach(history => {
+                if (!p.status_history || !Array.isArray(p.status_history)) return; // <-- ROBUSTNESS FIX
+
+                const initialStp = p.status_history.find(h => h.status === 'STP');
+                if(initialStp) { const historyDate = new Date(initialStp.date); if (historyDate.getFullYear() === year && historyDate.getMonth() + 1 === month) stps++; }
+                
+                p.status_history.forEach(history => {
                     const historyDate = new Date(history.date);
-                    if (historyDate.getFullYear() === year && historyDate.getMonth() + 1 === month) {
-                         if (history.status === 'GMS_Appointment') gms++;
-                         if (history.status === 'Joined') joins++;
-                         if (history.status === 'Disqualified' || history.status === 'Not_Joining') disqualified++;
-                    }
+                    if (historyDate.getFullYear() === year && historyDate.getMonth() + 1 === month) { if (history.status === 'GMS_Appointment') gms++; if (history.status === 'Joined') joins++; if (history.status === 'Disqualified' || history.status === 'Not_Joining') disqualified++; }
                 });
             });
-            data.datasets.stps.push(stps);
-            data.datasets.gms.push(gms);
-            data.datasets.joins.push(joins);
-            data.datasets.disqualified.push(disqualified);
+            data.datasets.stps.push(stps); data.datasets.gms.push(gms); data.datasets.joins.push(joins); data.datasets.disqualified.push(disqualified);
         }
         return data;
     }
+    // ============================
+    // ===== FIX #2: END ==========
+    // ============================
 
     function renderTrendChart(prospectsToAnalyze) {
-        const ctx = document.getElementById('analyticsTrendChart').getContext('2d');
-        const trendData = getMonthlyTrendData(prospectsToAnalyze);
-        const t = translations[currentLang].analytics;
-        if (trendChartInstance) {
-            trendChartInstance.destroy();
-        }
+        const ctx = document.getElementById('analyticsTrendChart').getContext('2d'); const trendData = getMonthlyTrendData(prospectsToAnalyze); const t = translations[currentLang].analytics;
+        if (trendChartInstance) { trendChartInstance.destroy(); }
         trendChartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: trendData.labels,
-                datasets: [
+            type: 'line', data: { labels: trendData.labels, datasets: [
                     { label: t.new_stps, data: trendData.datasets.stps, borderColor: 'rgba(59, 130, 246, 1)', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.4 },
                     { label: t.new_gms, data: trendData.datasets.gms, borderColor: 'rgba(249, 115, 22, 1)', backgroundColor: 'rgba(249, 115, 22, 0.1)', fill: true, tension: 0.4 },
                     { label: t.new_joins, data: trendData.datasets.joins, borderColor: 'rgba(16, 185, 129, 1)', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 },
                     { label: t.new_disqualified, data: trendData.datasets.disqualified, borderColor: 'rgba(239, 68, 68, 1)', backgroundColor: 'rgba(239, 68, 68, 0.1)', fill: true, tension: 0.4 }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: { beginAtZero: true, ticks: { precision: 0 } }
-                },
-                plugins: {
-                    legend: { position: 'top' },
-                },
-                interaction: {
-                    intersect: false,
-                    mode: 'index',
-                }
-            }
+                ] },
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }, plugins: { legend: { position: 'top' }, }, interaction: { intersect: false, mode: 'index', } }
         });
     }
 
     function renderToggles() {
-        const t = translations[currentLang];
-        const prospectToggle = document.getElementById('prospect-view-toggle');
-        prospectToggle.innerHTML = `
-            <button class="${prospectViewFilter === 'user' ? 'active' : ''}" data-filter="user">${t.prospectViewToggleMine}</button>
-            <button class="${prospectViewFilter === 'downline' ? 'active' : ''}" data-filter="downline">${t.prospectViewToggleDownlines}</button>
-            <button class="${prospectViewFilter === 'all' ? 'active' : ''}" data-filter="all">${t.prospectViewToggleAll}</button>
-        `;
+        const t = translations[currentLang]; const prospectToggle = document.getElementById('prospect-view-toggle');
+        prospectToggle.innerHTML = ` <button class="${prospectViewFilter === 'user' ? 'active' : ''}" data-filter="user">${t.prospectViewToggleMine}</button> <button class="${prospectViewFilter === 'downline' ? 'active' : ''}" data-filter="downline">${t.prospectViewToggleDownlines}</button> <button class="${prospectViewFilter === 'all' ? 'active' : ''}" data-filter="all">${t.prospectViewToggleAll}</button> `;
         const analyticsToggle = document.getElementById('analytics-view-toggle');
-        analyticsToggle.innerHTML = `
-            <button class="${analyticsView === 'user' ? 'active' : ''}" data-view="user">${t.analyticsViewToggleMine}</button>
-            <button class="${analyticsView === 'downline' ? 'active' : ''}" data-view="downline">${t.analyticsViewToggleDownlines}</button>
-        `;
+        analyticsToggle.innerHTML = ` <button class="${analyticsView === 'user' ? 'active' : ''}" data-view="user">${t.analyticsViewToggleMine}</button> <button class="${analyticsView === 'downline' ? 'active' : ''}" data-view="downline">${t.analyticsViewToggleDownlines}</button> `;
     }
 
-    document.getElementById('analytics-view-toggle').addEventListener('click', (e) => {
-        if (e.target.tagName === 'BUTTON') {
-            analyticsView = e.target.dataset.view;
-            document.getElementById('downline-analytics-controls').style.display = analyticsView === 'downline' ? 'block' : 'none';
-            if (analyticsView === 'downline') {
-                populateDownlineFilter();
-            }
-            renderAnalytics();
-            renderToggles();
-        }
-    });
-    
+    document.getElementById('analytics-view-toggle').addEventListener('click', (e) => { if (e.target.tagName === 'BUTTON') { analyticsView = e.target.dataset.view; document.getElementById('downline-analytics-controls').style.display = analyticsView === 'downline' ? 'block' : 'none'; if (analyticsView === 'downline') { populateDownlineFilter(); } renderAnalytics(); renderToggles(); } });
     document.getElementById('downline-filter').addEventListener('change', renderAnalytics);
 
     function populateDownlineFilter() {
-        const downlineNames = [...new Set(prospects.filter(p => p.ownerType === 'downline' && p.downlineName).map(p => p.downlineName))];
-        const filterSelect = document.getElementById('downline-filter');
-        const currentVal = filterSelect.value;
+        const downlineNames = [...new Set(prospects.filter(p => p.owner_type === 'downline' && p.downline_name).map(p => p.downline_name))];
+        const filterSelect = document.getElementById('downline-filter'); const currentVal = filterSelect.value;
         filterSelect.innerHTML = `<option value="all">${translations[currentLang].allDownlinesOption}</option>`;
-        downlineNames.sort().forEach(name => {
-            filterSelect.innerHTML += `<option value="${name}">${name}</option>`;
-        });
+        downlineNames.sort().forEach(name => { filterSelect.innerHTML += `<option value="${name}">${name}</option>`; });
         filterSelect.value = downlineNames.includes(currentVal) ? currentVal : 'all';
     }
 
     function populateDownlineDatalist() {
-        const downlineNames = [...new Set(prospects.filter(p => p.ownerType === 'downline' && p.downlineName).map(p => p.downlineName))];
-        const datalist = document.getElementById('downline-names-list');
-        datalist.innerHTML = '';
-        downlineNames.sort().forEach(name => {
-            datalist.innerHTML += `<option value="${name}"></option>`;
-        });
+        const downlineNames = [...new Set(prospects.filter(p => p.owner_type === 'downline' && p.downline_name).map(p => p.downline_name))];
+        const datalist = document.getElementById('downline-names-list'); datalist.innerHTML = '';
+        downlineNames.sort().forEach(name => { datalist.innerHTML += `<option value="${name}"></option>`; });
     }
 
-    document.getElementById('clearData').addEventListener('click', () => { if (confirm(translations[currentLang].confirmClearData)) { prospects = []; availability = {}; lastSyncTimestamp = null; localStorage.clear(); alert(translations[currentLang].dataCleared); renderAll(); } });
+    document.getElementById('clearData').addEventListener('click', async () => {
+        if (await showConfirmation(translations[currentLang].confirmClearData)) {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const { error } = await supabaseClient.from('prospects').delete().eq('user_id', user.id);
+            if(error) { alert("Error clearing data: " + error.message); }
+            else { prospects = []; availability = {}; lastSyncTimestamp = null; alert(translations[currentLang].dataCleared); renderAll(); }
+        }
+    });
     
     document.getElementById('exportData').addEventListener('click', () => {
-        if (prospects.length === 0 && Object.keys(availability).length === 0) return alert('No data to export.');
-        const timestamp = new Date();
-        const dataToExport = {
-            prospects: prospects,
-            availability: availability,
-            timestamp: timestamp.toISOString()
-        };
-        const dataStr = JSON.stringify(dataToExport, null, 2);
-        const blob = new Blob([dataStr], {type: "application/json"});
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        const date = `${timestamp.getFullYear()}-${String(timestamp.getMonth() + 1).padStart(2, '0')}-${String(timestamp.getDate()).padStart(2, '0')}`;
-        const time = `${String(timestamp.getHours()).padStart(2, '0')}-${String(timestamp.getMinutes()).padStart(2, '0')}`;
-        link.download = `AmwayTracker_Backup_${date}_${time}.json`;
-        link.href = url;
-        link.click();
-        URL.revokeObjectURL(url);
+        if (prospects.length === 0 && Object.keys(availability).length === 0) return alert('No data to export.'); const timestamp = new Date();
+        const dataToExport = { prospects: prospects, availability: availability, timestamp: timestamp.toISOString() };
+        const dataStr = JSON.stringify(dataToExport, null, 2); const blob = new Blob([dataStr], {type: "application/json"}); const url = URL.createObjectURL(blob);
+        const link = document.createElement('a'); const date = `${timestamp.getFullYear()}-${String(timestamp.getMonth() + 1).padStart(2, '0')}-${String(timestamp.getDate()).padStart(2, '0')}`; const time = `${String(timestamp.getHours()).padStart(2, '0')}-${String(timestamp.getMinutes()).padStart(2, '0')}`;
+        link.download = `AmwayTracker_Backup_${date}_${time}.json`; link.href = url; link.click(); URL.revokeObjectURL(url);
     });
 
     document.getElementById('importData').addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
+        const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
+        reader.onload = async (e) => {
             try {
                 const data = JSON.parse(e.target.result);
-                if (data && data.prospects && data.availability) {
-                    if (confirm(translations[currentLang].importConfirm)) {
-                        prospects = data.prospects;
-                        availability = data.availability;
-                        lastSyncTimestamp = data.timestamp;
-                        saveAllData();
-                        alert(translations[currentLang].importSuccess);
+                if (data && data.prospects) {
+                    if (await showConfirmation(translations[currentLang].importConfirm)) {
+                        const { data: { user } } = await supabaseClient.auth.getUser();
+                        await supabaseClient.from('prospects').delete().eq('user_id', user.id);
+                        const prospectsToImport = data.prospects.map(p => ({...p, user_id: user.id, id: undefined }));
+                        const { error } = await supabaseClient.from('prospects').insert(prospectsToImport);
+                        if(error) { alert("Error importing data: " + error.message); }
+                        else { availability = data.availability || {}; lastSyncTimestamp = data.timestamp; await loadProspects(user); alert(translations[currentLang].importSuccess); }
                     }
-                } else {
-                    alert(translations[currentLang].importError);
-                }
-            } catch (error) {
-                alert(translations[currentLang].importError);
-            }
+                } else { alert(translations[currentLang].importError); }
+            } catch (error) { alert(translations[currentLang].importError); }
         };
-        reader.readAsText(file);
-        event.target.value = ''; // Reset file input
+        reader.readAsText(file); event.target.value = '';
     });
 
-    function renderDataStatus() {
-        document.getElementById('total-prospects').textContent = prospects.length;
-        const syncTimeEl = document.getElementById('last-sync-time');
-        if (lastSyncTimestamp) {
-            syncTimeEl.textContent = formatDate(lastSyncTimestamp);
-        } else {
-            syncTimeEl.textContent = "Never";
-        }
-    }
+    function renderDataStatus() { document.getElementById('total-prospects').textContent = prospects.length; const syncTimeEl = document.getElementById('last-sync-time'); if (lastSyncTimestamp) { syncTimeEl.textContent = formatDate(lastSyncTimestamp); } else { syncTimeEl.textContent = "Never"; } }
     
     document.getElementById('prev-month').addEventListener('click', () => { calendarDate.setMonth(calendarDate.getMonth() - 1); renderCalendar(); });
     document.getElementById('next-month').addEventListener('click', () => { calendarDate.setMonth(calendarDate.getMonth() + 1); renderCalendar(); });
@@ -1749,11 +1308,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const dayCell = document.createElement('div'); dayCell.className = 'calendar-day'; const thisDate = new Date(year, month, i); const today = new Date();
             if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) dayCell.classList.add('today');
             const dayNumber = document.createElement('div'); dayNumber.className = 'day-number'; dayNumber.textContent = i; dayCell.appendChild(dayNumber);
-            const appointmentsOnDay = prospects.filter(p => { const stpDate = p.stpTime ? new Date(p.stpTime) : null; const gmsDate = p.gmsTime ? new Date(p.gmsTime) : null; return (stpDate && stpDate.getDate() === i && stpDate.getMonth() === month && stpDate.getFullYear() === year) || (gmsDate && gmsDate.getDate() === i && gmsDate.getMonth() === month && gmsDate.getFullYear() === year); });
+            const appointmentsOnDay = prospects.filter(p => { const stpDate = p.stp_time ? new Date(p.stp_time) : null; const gmsDate = p.gms_time ? new Date(p.gms_time) : null; return (stpDate && stpDate.getDate() === i && stpDate.getMonth() === month && stpDate.getFullYear() === year) || (gmsDate && gmsDate.getDate() === i && gmsDate.getMonth() === month && gmsDate.getFullYear() === year); });
             if (appointmentsOnDay.length > 0) {
                 const dotsContainer = document.createElement('div'); dotsContainer.className = 'appointment-dots';
-                if (appointmentsOnDay.some(p => { const d = new Date(p.stpTime); return d.getDate() === i && d.getMonth() === month; })) dotsContainer.innerHTML += '<span class="appointment-dot dot-stp"></span>';
-                if (appointmentsOnDay.some(p => { const d = p.gmsTime ? new Date(p.gmsTime) : null; return d && d.getDate() === i && d.getMonth() === month; })) dotsContainer.innerHTML += '<span class="appointment-dot dot-gms"></span>';
+                if (appointmentsOnDay.some(p => { const d = p.stp_time ? new Date(p.stp_time) : null; return d && d.getDate() === i && d.getMonth() === month; })) dotsContainer.innerHTML += '<span class="appointment-dot dot-stp"></span>';
+                if (appointmentsOnDay.some(p => { const d = p.gms_time ? new Date(p.gms_time) : null; return d && d.getDate() === i && d.getMonth() === month; })) dotsContainer.innerHTML += '<span class="appointment-dot dot-gms"></span>';
                 dayCell.appendChild(dotsContainer);
             }
             dayCell.style.cursor = 'pointer'; dayCell.onclick = () => showPlanner(thisDate);
@@ -1763,42 +1322,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentPlannerDate = null;
     function showPlanner(date) {
-        currentPlannerDate = date;
-        const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        const t = translations[currentLang];
-        document.getElementById('planner-title').textContent = `${date.toLocaleDateString(currentLang === 'zh-CN' ? 'zh-Hans-CN' : 'en-US', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})} - ${t.plannerTitle}`;
-        const apptList = document.getElementById('planner-appointments-list');
-        apptList.innerHTML = '';
-        const appointmentsOnDay = prospects.filter(p => { const stpDate = p.stpTime ? new Date(p.stpTime) : null; const gmsDate = p.gmsTime ? new Date(p.gmsTime) : null; return (stpDate && stpDate.toDateString() === date.toDateString()) || (gmsDate && gmsDate.toDateString() === date.toDateString()); });
+        currentPlannerDate = date; const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        const t = translations[currentLang]; document.getElementById('planner-title').textContent = `${date.toLocaleDateString(currentLang === 'zh-CN' ? 'zh-Hans-CN' : 'en-US', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})} - ${t.plannerTitle}`;
+        const apptList = document.getElementById('planner-appointments-list'); apptList.innerHTML = '';
+        const appointmentsOnDay = prospects.filter(p => { const stpDate = p.stp_time ? new Date(p.stp_time) : null; const gmsDate = p.gms_time ? new Date(p.gms_time) : null; return (stpDate && stpDate.toDateString() === date.toDateString()) || (gmsDate && gmsDate.toDateString() === date.toDateString()); });
         if (appointmentsOnDay.length === 0) { apptList.innerHTML = `<li>${t.noAppointmentsToday}</li>`; } else {
             appointmentsOnDay.forEach(p => {
-                let ownerInfo = p.ownerType === 'downline' ? ` (${p.downlineName})` : '';
-                const formatTime = (timeStr) => {
-                    const time = new Date(timeStr);
-                    return currentLang === 'zh-CN' ? formatChineseTime(time) : time.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true});
-                };
-                if (p.stpTime && new Date(p.stpTime).toDateString() === date.toDateString()) apptList.innerHTML += `<li>🔵 <strong>STP:</strong> ${p.name}${ownerInfo} - ${formatTime(p.stpTime)}</li>`;
-                if (p.gmsTime && new Date(p.gmsTime).toDateString() === date.toDateString()) apptList.innerHTML += `<li>🟠 <strong>GMS:</strong> ${p.name}${ownerInfo} - ${formatTime(p.gmsTime)}</li>`;
+                let ownerInfo = p.owner_type === 'downline' ? ` (${p.downline_name})` : ''; const formatTime = (timeStr) => { const time = new Date(timeStr); return currentLang === 'zh-CN' ? formatChineseTime(time) : time.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true}); };
+                if (p.stp_time && new Date(p.stp_time).toDateString() === date.toDateString()) apptList.innerHTML += `<li>🔵 <strong>STP:</strong> ${p.name}${ownerInfo} - ${formatTime(p.stp_time)}</li>`;
+                if (p.gms_time && new Date(p.gms_time).toDateString() === date.toDateString()) apptList.innerHTML += `<li>🟠 <strong>GMS:</strong> ${p.name}${ownerInfo} - ${formatTime(p.gms_time)}</li>`;
             });
         }
-        const timeline = document.getElementById('planner-timeline-slots');
-        timeline.innerHTML = '';
-        const savedSlots = availability[dateKey] || [];
+        const timeline = document.getElementById('planner-timeline-slots'); timeline.innerHTML = ''; const savedSlots = availability[dateKey] || [];
         for (let hour = 0; hour < 24; hour++) {
             for (let min = 0; min < 60; min += 30) {
-                const timeStr = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
-                const slotBtn = document.createElement('button');
-                slotBtn.className = 'time-slot'; slotBtn.dataset.time = timeStr;
-                const tempDate = new Date(2000, 0, 1, hour, min);
-                slotBtn.textContent = (currentLang === 'zh-CN') ? formatChineseTime(tempDate) : tempDate.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true});
-                const isBooked = appointmentsOnDay.some(p => {
-                    const stp = p.stpTime ? new Date(p.stpTime) : null; const gms = p.gmsTime ? new Date(p.gmsTime) : null;
-                    const slotStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, min);
-                    const slotEnd = new Date(slotStart.getTime() + 29 * 60000);
-                    return (stp && stp >= slotStart && stp <= slotEnd) || (gms && gms >= slotStart && gms <= slotEnd);
-                });
-                if (isBooked) { slotBtn.classList.add('booked'); slotBtn.disabled = true; } 
-                else if (savedSlots.includes(timeStr)) { slotBtn.classList.add('available'); }
+                const timeStr = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`; const slotBtn = document.createElement('button'); slotBtn.className = 'time-slot'; slotBtn.dataset.time = timeStr;
+                const tempDate = new Date(2000, 0, 1, hour, min); slotBtn.textContent = (currentLang === 'zh-CN') ? formatChineseTime(tempDate) : tempDate.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true});
+                const isBooked = appointmentsOnDay.some(p => { const stp = p.stp_time ? new Date(p.stp_time) : null; const gms = p.gms_time ? new Date(p.gms_time) : null; const slotStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, min); const slotEnd = new Date(slotStart.getTime() + 29 * 60000); return (stp && stp >= slotStart && stp <= slotEnd) || (gms && gms >= slotStart && gms <= slotEnd); });
+                if (isBooked) { slotBtn.classList.add('booked'); slotBtn.disabled = true; } else if (savedSlots.includes(timeStr)) { slotBtn.classList.add('available'); }
                 if (!isBooked) { slotBtn.onclick = () => slotBtn.classList.toggle('available'); }
                 timeline.appendChild(slotBtn);
             }
@@ -1809,75 +1350,26 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('save-availability-btn').addEventListener('click', () => {
         const dateKey = `${currentPlannerDate.getFullYear()}-${String(currentPlannerDate.getMonth() + 1).padStart(2, '0')}-${String(currentPlannerDate.getDate()).padStart(2, '0')}`;
         const availableSlots = Array.from(document.querySelectorAll('#planner-timeline-slots .time-slot.available')).map(slot => slot.dataset.time);
-        if (availableSlots.length > 0) {
-            availability[dateKey] = availableSlots;
-        } else {
-            delete availability[dateKey];
-        }
-        saveAllData();
+        if (availableSlots.length > 0) { availability[dateKey] = availableSlots; } else { delete availability[dateKey]; }
+        renderAvailableSlotsSidebar();
         plannerModal.style.display = 'none';
     });
     
-    function getSlotFromTime(date) {
-        if (!date) return null;
-        const minutes = date.getMinutes() < 30 ? '00' : '30';
-        return `${String(date.getHours()).padStart(2, '0')}:${minutes}`;
-    }
-
-    function updateAvailability(dateTimeString) {
-        if (!dateTimeString) return;
-        const date = new Date(dateTimeString);
-        const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        const timeSlot = getSlotFromTime(date);
-        
-        if (availability[dateKey]) {
-            availability[dateKey] = availability[dateKey].filter(slot => slot !== timeSlot);
-            if (availability[dateKey].length === 0) {
-                delete availability[dateKey];
-            }
-        }
-    }
-
-    function addBackAvailability(dateTimeString) {
-        if (!dateTimeString) return;
-        const date = new Date(dateTimeString);
-        const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        const timeSlot = getSlotFromTime(date);
-        
-        if (!availability[dateKey]) {
-            availability[dateKey] = [];
-        }
-        if (!availability[dateKey].includes(timeSlot)) {
-            availability[dateKey].push(timeSlot);
-            availability[dateKey].sort();
-        }
-    }
-    
     function renderAvailableSlotsSidebar() {
-        const listContainer = document.getElementById('available-slots-list');
-        const modalListContainer = document.getElementById('modal-slots-list');
-        listContainer.innerHTML = '';
-        modalListContainer.innerHTML = '';
-        const now = new Date();
-        let allAvailableSlots = [];
-
+        const listContainer = document.getElementById('available-slots-list'); const modalListContainer = document.getElementById('modal-slots-list');
+        listContainer.innerHTML = ''; modalListContainer.innerHTML = ''; const now = new Date(); let allAvailableSlots = [];
         Object.keys(availability).sort().forEach(dateKey => {
-            const date = new Date(dateKey.replace(/-/g, '/')); 
+            const date = new Date(dateKey.replace(/-/g, '/'));
             if (date >= new Date(now.toDateString())) {
                 availability[dateKey].forEach(timeStr => {
-                    const [hour, minute] = timeStr.split(':');
-                    const slotDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, minute);
-                    if (slotDate > now) {
-                        allAvailableSlots.push(slotDate);
-                    }
+                    const [hour, minute] = timeStr.split(':'); const slotDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, minute);
+                    if (slotDate > now) { allAvailableSlots.push(slotDate); }
                 });
             }
         });
-        
         let contentHTML = '';
-        if (allAvailableSlots.length === 0) {
-            contentHTML = `<div class="slot-time">${translations[currentLang].noAvailableSlots}</div>`;
-        } else {
+        if (allAvailableSlots.length === 0) { contentHTML = `<div class="slot-time">${translations[currentLang].noAvailableSlots}</div>`; }
+        else {
             const groupedSlots = {};
             allAvailableSlots.slice(0, 20).forEach(slotDate => {
                 const dayKey = slotDate.toLocaleDateString(currentLang === 'zh-CN' ? 'zh-Hans-CN' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -1885,218 +1377,54 @@ document.addEventListener('DOMContentLoaded', () => {
                 const timeString = (currentLang === 'zh-CN') ? formatChineseTime(slotDate) : slotDate.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true});
                 groupedSlots[dayKey].push(timeString);
             });
-
-            for (const day in groupedSlots) {
-                contentHTML += `<div class="slot-day-group"><h4>${day}</h4>`;
-                groupedSlots[day].forEach(time => {
-                    contentHTML += `<div class="slot-time">${time}</div>`;
-                });
-                contentHTML += `</div>`;
-            }
+            for (const day in groupedSlots) { contentHTML += `<div class="slot-day-group"><h4>${day}</h4>`; groupedSlots[day].forEach(time => { contentHTML += `<div class="slot-time">${time}</div>`; }); contentHTML += `</div>`; }
         }
-        listContainer.innerHTML = contentHTML;
-        modalListContainer.innerHTML = contentHTML;
+        listContainer.innerHTML = contentHTML; modalListContainer.innerHTML = contentHTML;
     }
 
-    function setupNotifications() {
-        // 1. Check if the browser supports notifications
-        if (!("Notification" in window)) {
-            console.log("This browser does not support desktop notification");
-            return;
-        }
+    const authContainer = document.getElementById('auth-container'); const appLayout = document.querySelector('.app-layout');
+    const loginView = document.getElementById('login-view'); const signupView = document.getElementById('signup-view');
 
-        // 2. Request permission from the user
-        Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-                console.log("Notification permission granted.");
-                // 3. If granted, start checking for appointments every minute
-                setInterval(checkForUpcomingAppointments, 60000); // 60000ms = 1 minute
-            }
-        });
-    }
-
-    function checkForUpcomingAppointments() {
-        const now = new Date();
-        const fifteenMinutesFromNow = new Date(now.getTime() + 15 * 60000);
-        const t = translations[currentLang];
-
-        prospects.forEach(p => {
-            let appointmentTime = null;
-            let appointmentType = '';
-
-            if (p.status === 'STP' && p.stpTime) {
-                appointmentTime = new Date(p.stpTime);
-                appointmentType = 'STP';
-            } else if (p.status === 'GMS_Appointment' && p.gmsTime) {
-                appointmentTime = new Date(p.gmsTime);
-                appointmentType = 'GMS';
-            }
-
-            // Check if there is an appointment within the next 15 minutes but not in the past
-            if (appointmentTime && appointmentTime > now && appointmentTime <= fifteenMinutesFromNow) {
-                
-                // IMPORTANT: Prevent sending the same notification over and over
-                const notificationKey = `notif_sent_${p.id}`;
-                if (sessionStorage.getItem(notificationKey) === 'true') {
-                    return; // Skip if we've already notified for this appointment
-                }
-
-                // Create the notification
-                const title = t.upcomingAppointmentsTitle;
-                const options = {
-                    body: `${p.name} - ${appointmentType} @ ${appointmentTime.toLocaleTimeString(currentLang === 'zh-CN' ? 'zh-CN' : 'en-US', { hour: '2-digit', minute: '2-digit' })}`,
-                    icon: 'https://img.icons8.com/color/48/000000/amethyst.png' // A simple diamond icon
-                };
-
-                new Notification(title, options);
-
-                // Mark this notification as sent in session storage
-                sessionStorage.setItem(notificationKey, 'true');
-            }
-        });
-    }
-
-    // =======================================================
-    // START: NEW AUTH & APP INITIALIZATION LOGIC
-    // =======================================================
-
-    const authContainer = document.getElementById('auth-container');
-    const appLayout = document.querySelector('.app-layout');
-    const logoutBtn = document.getElementById('logout-btn'); // We will add this button to the HTML header
-    const loginView = document.getElementById('login-view');
-    const signupView = document.getElementById('signup-view');
-
-    // --- Authentication Functions ---
-    async function handleLogin() {
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
-        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (error) alert(error.message);
-        else checkUserSession();
-    }
-
-    async function handleSignup() {
-        const email = document.getElementById('signup-email').value;
-        const password = document.getElementById('signup-password').value;
-        const { error } = await supabaseClient.auth.signUp({ email, password });
-        if (error) {
-            alert(error.message);
-        } else {
-            alert('Signup successful! Please check your email for a verification link.');
-            showLoginView();
-        }
-    }
+    async function handleLogin() { const email = document.getElementById('login-email').value; const password = document.getElementById('login-password').value; const { error } = await supabaseClient.auth.signInWithPassword({ email, password }); if (error) alert(error.message); else checkUserSession(); }
+    async function handleSignup() { const email = document.getElementById('signup-email').value; const password = document.getElementById('signup-password').value; const { error } = await supabaseClient.auth.signUp({ email, password }); if (error) { alert(error.message); } else { alert('Signup successful! Please check your email for a verification link.'); showLoginView(); } }
+    async function handleLogout() { await supabaseClient.auth.signOut(); prospects = []; availability = {}; renderAll(); appLayout.style.display = 'none'; authContainer.style.display = 'flex'; }
+    async function handlePasswordReset() { const email = prompt("Please enter your email to receive a password reset link:"); if (!email) return; const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href, }); if (error) { alert("Error: " + error.message); } else { alert("Password reset link sent! Please check your email."); } }
+    function showLoginView() { loginView.style.display = 'block'; signupView.style.display = 'none'; }
+    function showSignupView() { loginView.style.display = 'none'; signupView.style.display = 'block'; }
     
-    async function handleLogout() {
-        await supabaseClient.auth.signOut();
-        prospects = [];
-        availability = {};
+    async function loadProspects(user) {
+        const { data, error } = await supabaseClient.from('prospects').select('*').order('created_at', { ascending: false });
+        if (error) { console.error("Error loading data:", error); } else { prospects = data || []; }
+        currentPage = 1;
         renderAll();
-        appLayout.style.display = 'none';
-        authContainer.style.display = 'flex';
     }
 
-    async function handlePasswordReset() {
-        const email = prompt("Please enter your email to receive a password reset link:");
-        if (!email) return;
-
-        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-            redirectTo: window.location.href, // Redirects back to the same page
-        });
-
-        if (error) {
-            alert("Error: " + error.message);
-        } else {
-            alert("Password reset link sent! Please check your email.");
-        }
-    }
-
-    // --- UI Toggling ---
-    function showLoginView() {
-        loginView.style.display = 'block';
-        signupView.style.display = 'none';
-    }
-
-    function showSignupView() {
-        loginView.style.display = 'none';
-        signupView.style.display = 'block';
-    }
-
-    // --- Main Application Logic ---
     async function startApp(user) {
-        authContainer.style.display = 'none';
-        appLayout.style.display = 'flex';
-        // You'll need to add a logout button to your header controls for this to work
-        // e.g., <button id="logout-btn" class="btn-danger">Logout</button>
-        const logoutButton = document.querySelector('#logout-btn');
-        if(logoutButton) logoutButton.style.display = 'block';
-
-        if (user && user.email) {
-            document.getElementById('user-email-sidebar').textContent = user.email;
-            document.getElementById('user-email-settings').textContent = user.email;
-            document.getElementById('user-info-sidebar').style.display = 'block';
-        }
-        
-        const { data, error } = await supabaseClient.from('prospects').select('*');
-        if (error) {
-            console.error("Error loading data:", error);
-        } else {
-            prospects = data || [];
-        }
-
-        try {
-            const now = new Date();
-            analyticsPicker.setDate(now, true);
-        } catch (error) {
-            console.error("Failed to initialize analytics picker:", error);
-        }
-        renderAll();
-        setupNotifications();
+        authContainer.style.display = 'none'; appLayout.style.display = 'flex';
+        const logoutButton = document.querySelector('#logout-btn'); if(logoutButton) logoutButton.style.display = 'block';
+        if (user && user.email) { document.getElementById('user-email-sidebar').textContent = user.email; document.getElementById('user-email-settings').textContent = user.email; document.getElementById('user-info-sidebar').style.display = 'block'; }
+        await loadProspects(user);
+        try { const now = new Date(); analyticsPicker.setDate(now, true); } catch (error) { console.error("Failed to initialize analytics picker:", error); }
     }
     
     async function checkUserSession() {
-        setLanguage('zh-CN');
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        
-        document.getElementById('loading-screen').style.display = 'none';
-
-        if (session) {
-            startApp(session.user);
-        } else {
-            appLayout.style.display = 'none';
-            authContainer.style.display = 'flex';
-        }
+        setLanguage('zh-CN'); const { data: { session } } = await supabaseClient.auth.getSession();
+        document.getElementById('loading-screen').classList.add('hidden');
+        if (session) { startApp(session.user); } else { appLayout.style.display = 'none'; authContainer.style.display = 'flex'; }
     }
 
-    // --- Event Listeners ---
     document.getElementById('login-btn').addEventListener('click', handleLogin);
     document.getElementById('signup-btn').addEventListener('click', handleSignup);
     document.getElementById('show-signup-link').addEventListener('click', (e) => { e.preventDefault(); showSignupView(); });
     document.getElementById('show-login-link').addEventListener('click', (e) => { e.preventDefault(); showLoginView(); });
     document.getElementById('forgot-password-link').addEventListener('click', (e) => { e.preventDefault(); handlePasswordReset(); });
-    // Add logout button event listener if it exists in your header
-    const logoutButton = document.querySelector('#logout-btn');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', handleLogout);
-    }
+    const logoutButton = document.querySelector('#logout-btn'); if (logoutButton) { logoutButton.addEventListener('click', handleLogout); }
     
-    // Check for password recovery flow on page load
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
-        if (event === 'PASSWORD_RECOVERY') {
-            const newPassword = prompt("Please enter your new password:");
-            if (newPassword) {
-                const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
-                if (error) alert("Error updating password: " + error.message);
-                else alert("Password updated successfully!");
-            }
-        }
+        if (event === 'PASSWORD_RECOVERY') { const newPassword = prompt("Please enter your new password:"); if (newPassword) { const { error } = await supabaseClient.auth.updateUser({ password: newPassword }); if (error) alert("Error updating password: " + error.message); else alert("Password updated successfully!"); } }
     });
 
-    checkUserSession(); // This is the new starting point for your app
-
-    // =======================================================
-    // END: NEW AUTH & APP INITIALIZATION LOGIC
-    // =======================================================
+    checkUserSession();
 });
 </script>
 </body>
